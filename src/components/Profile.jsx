@@ -1,33 +1,21 @@
-import { useNavigate } from "react-router-dom";
-import { UserClientList } from "../views/UserClientList";
-import { ClientProfile } from "../views/ClientProfile";
 import { useEffect } from "react";
+import { ClientProfile } from "../views/ClientProfile";
+import { UserProfile } from "../views/UserProfile";
 
-export const Profile = ({ onLogIn }) => {
-  const navigation = useNavigate();
-
-  const roles = localStorage.getItem("roles");
-  const email = localStorage.getItem("email");
-  const token = localStorage.getItem("token");
-
+export const Profile = ({ onLogOut, isClient, token, profile }) => {
   useEffect(() => {
-    if (
-      !roles ||
-      !token ||
-      !email ||
-      !(roles.includes("user") || roles.includes("client"))
-    ) {
-      localStorage.removeItem("roles");
-      localStorage.removeItem("email");
-      localStorage.removeItem("token");
-      navigation("/notLoggedIn", { replace: true });
+    if (!profile || !token || !profile.email) {
+      onLogOut();
     }
-  }, [roles, token, email, navigation]);
+  }, [token, profile, onLogOut]);
 
-  if (roles && email && token && roles.includes("user")) {
-    return <UserClientList email={email} token={token} onLogIn={onLogIn} />;
+  if (token && !isClient && profile && onLogOut) {
+    return <UserProfile profile={profile} token={token} onLogOut={onLogOut} />;
+    // return <UserClientList email={email} token={token} />;
   }
-  if (roles && email && token && roles.includes("client")) {
-    return <ClientProfile email={email} token={token} onLogIn={onLogIn} />;
+  if (token && isClient && profile && onLogOut) {
+    return (
+      <ClientProfile email={profile.email} token={token} onLogOut={onLogOut} />
+    );
   }
 };

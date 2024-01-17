@@ -14,6 +14,7 @@ import {
 import { DeleteForever, Edit, Save, Add } from "@mui/icons-material";
 import moment from "moment";
 import Axios from "axios";
+import { NUTRIENTS } from "../utils/Nutrients";
 
 export const MealCard = ({
   ingredients,
@@ -21,7 +22,7 @@ export const MealCard = ({
   onRemoveIngredient,
 }) => {
   const [responseMessage, setResponseMessage] = useState("");
-  const [open, setOpen] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const [showErrors, setShowErrors] = useState(false);
@@ -29,6 +30,11 @@ export const MealCard = ({
   const [editMode, setEditMode] = useState(false);
   const toggleEditMode = () => {
     setEditMode(!editMode);
+  };
+
+  const [showNutrients, setShowNutrients] = useState(false);
+  const toggleShowNutrients = () => {
+    setShowNutrients(!showNutrients);
   };
 
   const [mealPhoto, setMealPhoto] = useState("");
@@ -84,7 +90,7 @@ export const MealCard = ({
       return;
     }
 
-    setOpen(false);
+    setOpenSnackbar(false);
   };
   const onAddNewMeal = () => {
     setShowErrors(true);
@@ -157,14 +163,14 @@ export const MealCard = ({
         const responseMessage = res.data.message;
         setShowErrors(false);
         setResponseMessage(responseMessage);
-        setOpen(true);
+        setOpenSnackbar(true);
         setSuccess(true);
         console.log(responseMessage);
       })
       .catch((error) => {
         const responseMessage = error.response.data.message;
         console.log(responseMessage);
-        setOpen(true);
+        setOpenSnackbar(true);
         setSuccess(false);
         setResponseMessage(responseMessage);
       });
@@ -215,7 +221,11 @@ export const MealCard = ({
           >
             Finish and add the meal
           </Button>
-          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+          <Snackbar
+            open={openSnackbar}
+            autoHideDuration={6000}
+            onClose={handleClose}
+          >
             <Alert
               onClose={handleClose}
               severity={success ? "success" : "error"}
@@ -373,52 +383,105 @@ export const MealCard = ({
             </>
           )}
         </ListItem>
-        {ingredients ? (
+
+        {ingredients && ingredients.length ? (
           <>
-            {ingredients.map((ingredient, index) => {
-              console.log(ingredient);
-              return (
-                <>
-                  {index > 0 ? <Divider /> : null}
-                  <ListItem key={index}>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        width: "100%",
-                        alignItems: "center",
-                      }}
-                    >
-                      <span>
-                        {ingredient.name} ({ingredient.quantityGrams}g)
-                      </span>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => onRemoveIngredient(ingredient)}
-                      >
-                        <DeleteForever />
-                      </Button>
-                    </div>
-                  </ListItem>
-                </>
-              );
-            })}
+            <Divider />
+            <ListItem>
+              <Button
+                onClick={toggleShowNutrients}
+                startIcon={<List />}
+                fullWidth
+              >
+                {showNutrients ? "Show ingredients" : "Show nutrients"}
+              </Button>
+            </ListItem>
+            {showNutrients ? (
+              (() => {
+                const nutrients = ingredients.reduce(
+                  (totalNutrients, currentIngredient) => {
+                    currentIngredient.nutrients.forEach((nutrient) => {
+                      totalNutrients[nutrient.code] = totalNutrients[
+                        nutrient.code
+                      ]
+                        ? totalNutrients[nutrient.code] +
+                          currentIngredient.quantityGrams * nutrient.quantity
+                        : currentIngredient.quantityGrams * nutrient.quantity;
+                    });
+                    return totalNutrients;
+                  },
+                  {}
+                );
+                console.log("nutrients");
+                console.log(nutrients);
+                return (
+                  <>
+                    {Object.entries(nutrients).map(
+                      ([nutrientCode, nutrientAmount], index) => {
+                        const nutrientInfo = NUTRIENTS.find(
+                          (e) => e.code === nutrientCode
+                        );
+                        if (!nutrientInfo) {
+                          return null;
+                        }
+                        return (
+                          <>
+                            {index > 0 ? <Divider /> : null}
+                            <ListItem
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <span>{nutrientInfo.label}:</span>
+                              <span>
+                                {nutrientAmount.toFixed(3).toString()}
+                                {nutrientInfo.unit}
+                              </span>
+                            </ListItem>
+                          </>
+                        );
+                      }
+                    )}
+                  </>
+                );
+              })()
+            ) : (
+              <>
+                {ingredients.map((ingredient, index) => {
+                  console.log(ingredient);
+                  return (
+                    <>
+                      {index > 0 ? <Divider /> : null}
+                      <ListItem key={index}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            width: "100%",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span>
+                            {ingredient.name} ({ingredient.quantityGrams}g)
+                          </span>
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={() => onRemoveIngredient(ingredient)}
+                          >
+                            <DeleteForever />
+                          </Button>
+                        </div>
+                      </ListItem>
+                    </>
+                  );
+                })}
+              </>
+            )}
           </>
         ) : null}
       </List>
-      {/* <Grid
-        container
-        spacing={1}
-        marginBottom={"5px"}
-        style={{ width: "100%" }}
-      >
-        <Grid xs={12}>
-          <Button variant="contained" onClick={onAddMeal}>
-            Add the meal
-          </Button>
-        </Grid>
-      </Grid> */}
     </Card>
   );
 };

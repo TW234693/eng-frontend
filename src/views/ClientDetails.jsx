@@ -17,7 +17,7 @@ export const ClientDetails = () => {
   const navigation = useNavigate();
 
   const goBack = () => {
-    navigation("/myProfile", { replace: true });
+    navigation("/myClients", { replace: true });
   };
 
   const onAddMeal = () => {

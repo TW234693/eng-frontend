@@ -32,12 +32,12 @@ export const AddMeal = () => {
     if (id) {
       navigation(`/clientDetails/${id}`, { replace: true });
     } else {
-      navigation(`/myProfile`, { replace: true });
+      navigation(`/myClients`, { replace: true });
     }
   };
 
   useEffect(() => {
-    if (location.state.clientDetails) {
+    if (location.state && location.state.clientDetails) {
       setClientDetails(location.state.clientDetails);
     }
   }, [location.state]);

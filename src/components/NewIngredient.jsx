@@ -44,13 +44,15 @@ export const NewIngredient = ({ onAddIngredient }) => {
         chosenIngredientData.totalNutrients
       ).map((key) => {
         const nutrientEntry = chosenIngredientData.totalNutrients[key];
+        console.log(nutrientEntry);
         return {
           code: key,
           label: nutrientEntry.label,
-          quantity: nutrientEntry.quantity.toPrecision(3),
+          quantity: nutrientEntry.quantity,
           unit: nutrientEntry.unit,
         };
       });
+      console.log(mealIngredient);
       onAddIngredient(mealIngredient);
 
       setSearchQuery("");
@@ -158,13 +160,18 @@ export const NewIngredient = ({ onAddIngredient }) => {
               <Search />
             </Button>
           </ListItem>
-          <ListItem>
+          <ListItem style={{ maxHeight: "70vh", overflowY: "auto" }}>
             {searchResults === null || searchResults.length === 0 ? (
               <h3 style={{ color: "rgb(220,0,0)" }}>
                 {searchWasMade ? "No matching ingredients found" : null}
               </h3>
             ) : (
-              <Grid container spacing={3} marginTop={"5px"}>
+              <Grid
+                container
+                spacing={3}
+                marginTop={"5px"}
+                style={{ maxHeight: "70vh" }}
+              >
                 {searchResults.map((food) => {
                   return (
                     <Grid item key={food.foodId} xs={3}>
@@ -204,7 +211,11 @@ export const NewIngredient = ({ onAddIngredient }) => {
                                           justifyContent: "space-between",
                                         }}
                                       >
-                                        <span>{key[0]}</span>
+                                        <span>
+                                          {NUTRIENTS.find(
+                                            (n) => n.code === key[0]
+                                          ).label ?? key[0]}
+                                        </span>
                                         <span>{key[1]}</span>
                                       </ListItem>
                                     </div>

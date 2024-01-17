@@ -1,43 +1,29 @@
 import Grid from "@mui/system/Unstable_Grid/Grid";
 import Axios from "axios";
 import { useState, useEffect } from "react";
-import {
-  Button,
-  CircularProgress,
-  // Card,
-  // Divider,
-  // List,
-  // ListItem,
-  // ListItemIcon,
-  // ListItemText,
-} from "@mui/material";
-import {
-  AddRounded,
-  // DraftsRounded,
-  // Person,
-  // Description,
-} from "@mui/icons-material";
+import { Button, CircularProgress } from "@mui/material";
+import { AddRounded, ArrowBack } from "@mui/icons-material";
 import { ClientCard } from "../components/ClientCard";
 import { useNavigate } from "react-router-dom";
 
-export const UserClientList = ({ email, token, onLogIn }) => {
+export const UserClientList = ({ onLogOut, email, token }) => {
+  // console.log(`user client list - ${email}, ${token}`);
+  useEffect(() => {
+    if (!onLogOut || !email || !token) {
+      onLogOut();
+    }
+  }, [onLogOut, email, token]);
+
+  const goBack = () => {
+    navigation("/myProfile", { replace: true });
+  };
+
   const navigation = useNavigate();
-  const [profileInfo, setProfileInfo] = useState(null);
   const [userClients, setUserClients] = useState(null);
 
   const onAddNewClient = () => {
     navigation("/assignClient", { replace: true });
   };
-
-  useEffect(() => {
-    Axios.get(`//localhost:3500/search/email=${email}`)
-      .then((res) => {
-        setProfileInfo(res.data);
-      })
-      .catch(() => {
-        console.log("Something went wrong while fetching profile info.");
-      });
-  }, [email]);
 
   useEffect(() => {
     Axios.get(`//localhost:3500/users/getClients/email=${email}`, {
@@ -51,18 +37,25 @@ export const UserClientList = ({ email, token, onLogIn }) => {
       });
   }, [email, token]);
 
-  useEffect(() => {
-    if (profileInfo) {
-      onLogIn(profileInfo);
-    }
-  }, [onLogIn, profileInfo]);
-
-  if (!profileInfo) {
-    return;
-  }
   return (
     <div>
       <Grid container spacing={3} margin={"10px"}>
+        <Grid item xs={12}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-around",
+            }}
+          >
+            <Button
+              onClick={goBack}
+              variant={"contained"}
+              startIcon={<ArrowBack />}
+            >
+              Go back
+            </Button>
+          </div>
+        </Grid>
         {userClients ? (
           userClients.map((client, i) => {
             return (

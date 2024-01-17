@@ -6,6 +6,10 @@ export const LoggedInHeader = ({ onLogOut, profile, navigation }) => {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const isOpened = Boolean(menuAnchor);
 
+  const goBack = () => {
+    navigation("/myProfile", { replace: true });
+  };
+
   const handleMenuButtonClick = (e) => {
     setMenuAnchor(e.currentTarget);
   };
@@ -52,24 +56,33 @@ export const LoggedInHeader = ({ onLogOut, profile, navigation }) => {
           <MenuItem onClick={handleClose}>My account</MenuItem>
           <MenuItem onClick={handleClose}>Logout</MenuItem>
         </Menu>
-        <img
-          src={
-            profile.photo && new URL(profile.photo)
-              ? profile.photo
-              : "https://www.w3schools.com/howto/img_avatar.png"
-          }
+        <div
+          onClick={goBack}
           style={{
-            minHeight: "50px",
-            maxHeight: "50px",
-            objectFit: "contain",
-            margin: "10px",
-            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
           }}
-          alt="Profile"
-        ></img>
-        <span>
-          {profile.name} {profile.surname}
-        </span>
+        >
+          <img
+            src={
+              profile.photo && new URL(profile.photo)
+                ? profile.photo
+                : "https://www.w3schools.com/howto/img_avatar.png"
+            }
+            style={{
+              minHeight: "50px",
+              maxHeight: "50px",
+              objectFit: "contain",
+              margin: "10px",
+              borderRadius: "50%",
+            }}
+            alt="Profile"
+          ></img>
+          <span>
+            {profile.name} {profile.surname}
+          </span>
+        </div>
       </div>
       <div>
         <Button onClick={onLogOut} color={"error"} variant="contained">

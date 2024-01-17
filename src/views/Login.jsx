@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import Axios from "axios";
 import { TextField, Button, Alert, FormControl } from "@mui/material";
 
-export const Login = ({ navigation }) => {
+export const Login = ({ onLogIn }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -26,14 +26,14 @@ export const Login = ({ navigation }) => {
       password: password,
     })
       .then((res) => {
-        console.log("trying to log in");
         const token = res.data.accessToken;
         const { email, roles } = jwtDecode(token).UserInfo;
         localStorage.setItem("email", email);
         localStorage.setItem("roles", roles);
         localStorage.setItem("token", token);
+        console.log(token);
         setLoginError("");
-        navigation("/myProfile", { replace: true });
+        onLogIn(email, roles, token);
       })
       .catch(() => {
         setLoginError("Invalid credentials");
