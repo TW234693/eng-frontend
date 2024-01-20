@@ -21,7 +21,7 @@ const PASSWORD_NUMBER_REGEX = /^(?=.*[0-9]).*$/;
 const PASSWORD_SPECIAL_REGEX = /^(?=.*[!@#$%^&*]).*$/;
 const PASSWORD_LENGTH_REGEX = /^.{8,32}$/;
 
-export const Register = ({ navigation }) => {
+export const Register = ({ navigation, isLoggedIn }) => {
   const [showErrors, setShowErrors] = useState(false);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -85,6 +85,12 @@ export const Register = ({ navigation }) => {
     }
     setEmailError("");
   }, [email]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigation("/home", { replace: true });
+    }
+  });
 
   const handleRegister = (event) => {
     event.preventDefault();

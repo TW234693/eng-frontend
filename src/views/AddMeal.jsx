@@ -5,7 +5,7 @@ import { ArrowBack } from "@mui/icons-material";
 import { MealCard } from "../components/MealCard";
 import { NewIngredient } from "../components/NewIngredient";
 
-export const AddMeal = () => {
+export const AddMeal = ({ checkLoggedInState }) => {
   const [clientDetails, setClientDetails] = useState(null);
   const [mealIngredients, setMealingredients] = useState(null);
   const onAddIngredient = (newIngredient) => {
@@ -43,11 +43,8 @@ export const AddMeal = () => {
   }, [location.state]);
 
   if (!clientDetails) {
-    return (
-      <>
-        <h2>No client details found</h2>
-      </>
-    );
+    navigation("/myClients", { replace: true });
+    return <h2>No client details found.</h2>;
   }
 
   return (
@@ -74,6 +71,7 @@ export const AddMeal = () => {
             ingredients={mealIngredients}
             clientDetails={clientDetails}
             onRemoveIngredient={onRemoveIngredient}
+            checkLoggedInState={checkLoggedInState}
           />
         </Grid>
         <Grid item xs={6}>

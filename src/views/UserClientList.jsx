@@ -6,16 +6,9 @@ import { AddRounded, ArrowBack } from "@mui/icons-material";
 import { ClientCard } from "../components/ClientCard";
 import { useNavigate } from "react-router-dom";
 
-export const UserClientList = ({ onLogOut, email, token }) => {
-  // console.log(`user client list - ${email}, ${token}`);
-  useEffect(() => {
-    if (!onLogOut || !email || !token) {
-      onLogOut();
-    }
-  }, [onLogOut, email, token]);
-
+export const UserClientList = ({ checkLoggedInState, email, token }) => {
   const goBack = () => {
-    navigation("/myProfile", { replace: true });
+    navigation("/home", { replace: true });
   };
 
   const navigation = useNavigate();
@@ -37,10 +30,15 @@ export const UserClientList = ({ onLogOut, email, token }) => {
       });
   }, [email, token]);
 
+  if (!token || !email) {
+    checkLoggedInState();
+    return null;
+  }
+
   return (
     <div>
-      <Grid container spacing={3} margin={"10px"}>
-        <Grid item xs={12}>
+      <Grid container spacing={3}>
+        <Grid xs={12}>
           <div
             style={{
               display: "flex",

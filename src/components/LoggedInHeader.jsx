@@ -71,10 +71,12 @@ export const LoggedInHeader = ({ onLogOut, profile, navigation }) => {
                 : "https://www.w3schools.com/howto/img_avatar.png"
             }
             style={{
-              minHeight: "50px",
               maxHeight: "50px",
-              objectFit: "contain",
+              minHeight: "50px",
+              minWidth: "50px",
+              maxWidth: "50px",
               margin: "10px",
+              objectFit: "fill",
               borderRadius: "50%",
             }}
             alt="Profile"

@@ -11,35 +11,39 @@ import { Header } from "./Header";
 import { TestComponent } from "./TestComponent";
 import { AddMeal } from "../views/AddMeal";
 import { UserClientList } from "../views/UserClientList";
+import { Home } from "../views/Home";
 
 export const NavigationManager = () => {
   const navigation = useNavigate();
 
-  const [loggedIn, setLoggedIn] = useState(false);
+  // const [loggedIn, setLoggedIn] = useState(false);
   const [loggedInProfile, setLoggedInprofile] = useState(null);
   const [isClient, setIsClient] = useState(null);
 
-  const [token, setToken] = useState(null);
+  const [loggedInToken, setLoggedInToken] = useState(null);
 
   const onLogOut = useCallback(() => {
+    console.log("logging out");
     localStorage.removeItem("roles");
     localStorage.removeItem("email");
     localStorage.removeItem("token");
-    setLoggedIn(false);
+    // setLoggedIn(false);
     setLoggedInprofile(null);
     setIsClient(null);
-    setTimeout(() => {
-      if (
-        !window.location.href.endsWith("/login") &&
-        !window.location.href.endsWith("/register")
-      ) {
-        navigation("/login", { replace: true });
-      }
-    }, 0);
+    setLoggedInToken(null);
+    if (
+      !window.location.href.endsWith("/login") &&
+      !window.location.href.endsWith("/register")
+    ) {
+      navigation("/login", { replace: true });
+    }
   }, [navigation]);
 
   const onLogIn = useCallback(
-    (email, roles, token) => {
+    (email, roles, token, justLoggedIn) => {
+      // if (token === loggedInToken && loggedInProfile.email === email && roles) {
+      //   return;
+      // }
       Axios.get(
         `//localhost:3500/${
           roles.includes("user") ? `search` : `clients/getClient`
@@ -51,13 +55,15 @@ export const NavigationManager = () => {
         .then((res) => {
           console.log("loggin in");
           setIsClient(roles.includes("user") ? false : true);
-          setLoggedIn(true);
+          // setLoggedIn(true);
           setLoggedInprofile(res.data);
           console.log(res);
-          setToken(token);
-          navigation("/myProfile", {
-            replace: true,
-          });
+          setLoggedInToken(token);
+          if (justLoggedIn) {
+            navigation("/home", {
+              replace: true,
+            });
+          }
         })
         .catch(() => {
           console.log("Something went wrong while fetching profile info.");
@@ -67,21 +73,37 @@ export const NavigationManager = () => {
     [navigation, onLogOut]
   );
 
+  const checkLoggedInState = useCallback(() => {
+    const email = localStorage.getItem("email");
+    const token = localStorage.getItem("token");
+    const roles = localStorage.getItem("roles");
+
+    console.log("checking logged in state");
+
+    if (email && token && roles) {
+      onLogIn(email, roles, token, false);
+    } else if (!email || !token || !roles) {
+      onLogOut();
+    }
+  }, [onLogOut, onLogIn]);
+
   useEffect(() => {
     const checkLoggedInState = () => {
       const email = localStorage.getItem("email");
       const token = localStorage.getItem("token");
       const roles = localStorage.getItem("roles");
 
-      if (email && token && roles && !loggedIn) {
-        onLogIn(email, roles, token);
-      } else if (loggedIn && (!email || !token || !roles)) {
+      console.log("checking logged in state USE EFFECT");
+
+      if (email && token && roles) {
+        onLogIn(email, roles, token, false);
+      } else if (!email || !token || !roles) {
         onLogOut();
       }
     };
 
     checkLoggedInState();
-  }, [loggedIn, loggedInProfile, onLogOut, onLogIn]);
+  }, [onLogIn, onLogOut]);
 
   return (
     <>
@@ -90,57 +112,94 @@ export const NavigationManager = () => {
         onLogOut={onLogOut}
         navigation={navigation}
       ></Header>
-      <Routes>
-        {/* <Route path="/" element={<Layout />}> */}
-        {/* <Route index element={<Home />} /> */}
-        <Route index element={<Navigate to="/register" replace />} />
-        <Route path="/login" element={<Login onLogIn={onLogIn} />} />
-        <Route
-          path="/register"
-          element={<Register navigation={navigation} />}
-        />
-        <Route
-          path="/myProfile"
-          element={
-            <Profile
-              onLogOut={onLogOut}
-              isClient={isClient}
-              token={token}
-              profile={loggedInProfile}
-            />
-          }
-        />
-        <Route
-          path="/myClients"
-          element={
-            <UserClientList
-              onLogOut={onLogOut}
-              email={
-                loggedInProfile && loggedInProfile.email
-                  ? loggedInProfile.email
-                  : ""
-              }
-              token={token}
-            />
-          }
-        />
-        <Route path="/notLoggedIn" element={<NotLoggedIn />} />
-        <Route
-          path="/assignClient"
-          element={
-            <AssignNewClient navigation={navigation} onLogOut={onLogOut} />
-          }
-        />
-        <Route
-          path="/clientDetails/:id"
-          element={<ClientDetails onLogOut={onLogOut} />}
-        />
-        <Route
-          path="/clientDetails/:id/addMeal"
-          element={<AddMeal onLogOut={onLogOut} />}
-        />
-        <Route path="/test" element={<TestComponent />} />
-      </Routes>
+      <div style={{ padding: "20px" }}>
+        <Routes>
+          {/* <Route path="/" element={<Layout />}> */}
+          {/* <Route index element={<Home />} /> */}
+          <Route index element={<Navigate to="/register" replace />} />
+          <Route
+            path="/login"
+            element={
+              <Login
+                onLogIn={onLogIn}
+                isLoggedIn={
+                  isClient !== null &&
+                  loggedInProfile !== null &&
+                  loggedInToken !== null
+                }
+              />
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <Register
+                navigation={navigation}
+                isLoggedIn={
+                  isClient !== null &&
+                  loggedInProfile !== null &&
+                  loggedInToken !== null
+                }
+              />
+            }
+          />
+          <Route
+            path="/home"
+            element={
+              <Home
+                checkLoggedInState={checkLoggedInState}
+                isClient={isClient}
+                token={loggedInToken}
+                profile={loggedInProfile}
+              />
+            }
+          />
+          <Route
+            path="/myProfile"
+            element={
+              <Profile
+                checkLoggedInState={checkLoggedInState}
+                isClient={isClient}
+                token={loggedInToken}
+                profile={loggedInProfile}
+              />
+            }
+          />
+          <Route
+            path="/myClients"
+            element={
+              <UserClientList
+                checkLoggedInState={checkLoggedInState}
+                email={
+                  loggedInProfile && loggedInProfile.email
+                    ? loggedInProfile.email
+                    : ""
+                }
+                token={loggedInToken}
+              />
+            }
+          />
+          <Route path="/notLoggedIn" element={<NotLoggedIn />} />
+          <Route
+            path="/assignClient"
+            element={
+              <AssignNewClient
+                navigation={navigation}
+                checkLoggedInState={checkLoggedInState}
+              />
+            }
+          />
+          <Route
+            path="/clientDetails/:id"
+            element={<ClientDetails checkLoggedInState={checkLoggedInState} />}
+          />
+          <Route
+            path="/clientDetails/:id/addMeal"
+            element={<AddMeal checkLoggedInState={checkLoggedInState} />}
+          />
+          <Route path="/test" element={<TestComponent />} />
+        </Routes>
+      </div>
     </>
   );
 };

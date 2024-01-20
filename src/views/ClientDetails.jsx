@@ -7,7 +7,7 @@ import { ArrowBack, Add } from "@mui/icons-material";
 import { ClientCard } from "../components/ClientCard";
 import { MealCalendar } from "../components/MealCalendar";
 
-export const ClientDetails = () => {
+export const ClientDetails = ({ checkLoggedInState }) => {
   const { id } = useParams();
   const [dataFetched, setDataFetched] = useState(false);
   const [clientDetails, setClientDetails] = useState(null);
@@ -28,18 +28,10 @@ export const ClientDetails = () => {
   const email = localStorage.getItem("email");
   const token = localStorage.getItem("token");
 
-  if (
-    !roles ||
-    !token ||
-    !email ||
-    !(roles.includes("user") || roles.includes("client"))
-  ) {
-    console.log("A problem has occured when trying to load clien t details");
-    localStorage.removeItem("roles");
-    localStorage.removeItem("email");
-    localStorage.removeItem("token");
-    navigation("/notLoggedIn", { replace: true });
-  }
+  // if (!email || !token || !roles || !id) {
+  //   console.log("no")
+  //   checkLoggedInState();
+  // }
 
   useEffect(() => {
     Axios.get(`//localhost:3500/users/getClients/email=${email}`, {
@@ -69,11 +61,9 @@ export const ClientDetails = () => {
         setDataFetched(true);
       })
       .catch(() => {
-        console.log(
-          "Something went wrong when fetching specific client details"
-        );
+        checkLoggedInState();
       });
-  }, [email, token, id, navigation]);
+  }, [email, token, id, navigation, checkLoggedInState]);
 
   useEffect(() => {
     if (!clientDetails) {
@@ -107,11 +97,12 @@ export const ClientDetails = () => {
         setDataFetched(true);
       })
       .catch(() => {
-        console.log("Something went wrong when fetching client's data");
+        checkLoggedInState();
       });
-  }, [clientDetails, navigation, token]);
+  }, [clientDetails, navigation, token, checkLoggedInState]);
 
   if (!id) {
+    navigation("/myClients", { replace: true });
     return <h2>No client Id found</h2>;
   }
 

@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import Axios from "axios";
 import { TextField, Button, Alert, FormControl } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-export const Login = ({ onLogIn }) => {
+export const Login = ({ onLogIn, isLoggedIn }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [loginError, setLoginError] = useState();
+
+  const navigation = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -33,12 +36,18 @@ export const Login = ({ onLogIn }) => {
         localStorage.setItem("token", token);
         console.log(token);
         setLoginError("");
-        onLogIn(email, roles, token);
+        onLogIn(email, roles, token, true);
       })
       .catch(() => {
         setLoginError("Invalid credentials");
       });
   };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigation("/home", { replace: true });
+    }
+  });
 
   return (
     <div

@@ -5,7 +5,10 @@ import { TextField, FormControl, Button, Alert } from "@mui/material";
 const EMAIL_REGEX =
   /^(?:(?:[^<>()[\]\\.,;:\s@"]+(?:\.[^<>()[\]\\.,;:\s@"]+)*)|.(?:".+"))@(?:(?:\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(?:(?:[a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-export const AssignNewClient = ({ navigation }) => {
+export const AssignNewClient = ({ navigation, checkLoggedInState }) => {
+  const userEmail = localStorage.getItem("email");
+  const token = localStorage.getItem("token");
+
   const [showErrors, setShowErrors] = useState(false);
   const [clientEmail, setClientEmail] = useState("");
   const [assigningResponse, setAssigningResponse] = useState("");
@@ -31,30 +34,25 @@ export const AssignNewClient = ({ navigation }) => {
       return;
     }
 
-    const loggedInUserEmail = localStorage.getItem("email");
-    const loggedInUserToken = localStorage.getItem("token");
-
-    if (!loggedInUserEmail || !loggedInUserToken || !clientEmail) {
-      console.log("Error when preparing assign client request");
+    if (!userEmail || !token) {
+      checkLoggedInState();
     }
 
     const assignClientRequestObject = {
-      userEmail: loggedInUserEmail,
+      userEmail: userEmail,
       clientEmail: clientEmail,
     };
 
     // console.log(assignClientRequestObject);
 
     Axios.patch("//localhost:3500/users/assign", assignClientRequestObject, {
-      headers: { Authorization: `Bearer ${loggedInUserToken}` },
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
         const responseMessage = res.data.message;
         setAssignmentCompleted(true);
         setAssigningResponse(responseMessage);
-        setTimeout(() => {
-          navigation("/myProfile", { replace: true });
-        }, 2000);
+        navigation("/myClients", { replace: true });
       })
       .catch((error) => {
         const responseMessage = error.response.data.message;
@@ -62,6 +60,11 @@ export const AssignNewClient = ({ navigation }) => {
         setAssigningResponse(responseMessage);
       });
   };
+
+  if (!token || !userEmail) {
+    checkLoggedInState();
+    return null;
+  }
 
   return (
     <div

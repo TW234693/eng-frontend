@@ -35,10 +35,11 @@ export const GuestHeader = ({ navigation }) => {
       </div>
       <div
         style={{
-          width: "15%",
+          width: "200px",
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
+          padding: "5px",
         }}
       >
         <Button onClick={goToLogIn} color={"success"} variant="contained">

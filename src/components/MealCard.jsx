@@ -20,6 +20,7 @@ export const MealCard = ({
   ingredients,
   clientDetails,
   onRemoveIngredient,
+  checkLoggedInState,
 }) => {
   const [responseMessage, setResponseMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -149,6 +150,7 @@ export const MealCard = ({
       setAddMealError(
         "An error has occured, please try to log out and in again."
       );
+      checkLoggedInState();
       return;
     }
 
@@ -432,6 +434,7 @@ export const MealCard = ({
                                 display: "flex",
                                 justifyContent: "space-between",
                               }}
+                              key={index}
                             >
                               <span>{nutrientInfo.label}:</span>
                               <span>
