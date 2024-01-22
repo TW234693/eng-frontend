@@ -36,61 +36,59 @@ export const UserClientList = ({ checkLoggedInState, email, token }) => {
   }
 
   return (
-    <div>
-      <Grid container spacing={3}>
-        <Grid xs={12}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-around",
-            }}
-          >
-            <Button
-              onClick={goBack}
-              variant={"contained"}
-              startIcon={<ArrowBack />}
-            >
-              Go back
-            </Button>
-          </div>
-        </Grid>
-        {userClients ? (
-          userClients.map((client, i) => {
-            return (
-              <Grid xs={6} key={i}>
-                <ClientCard client={client} navigation={navigation} />
-              </Grid>
-            );
-          })
-        ) : (
-          <Grid xs={12}>
-            <h2>Fetching client data...</h2>
-            <CircularProgress color="success" />
-          </Grid>
-        )}
-        <Grid xs={6}>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+          }}
+        >
           <Button
-            color="success"
-            variant="contained"
-            style={{
-              margin: "10px",
-              height: "100px",
-              width: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onClick={onAddNewClient}
+            onClick={goBack}
+            variant={"contained"}
+            startIcon={<ArrowBack />}
           >
-            <AddRounded
-              style={{
-                fontSize: "10cqh",
-                color: "white",
-              }}
-            />
+            Go back
           </Button>
-        </Grid>
+        </div>
       </Grid>
-    </div>
+      {userClients ? (
+        userClients.map((client, i) => {
+          return (
+            <Grid xs={6} key={i}>
+              <ClientCard client={client} navigation={navigation} />
+            </Grid>
+          );
+        })
+      ) : (
+        <Grid xs={12}>
+          <h2>Fetching client data...</h2>
+          <CircularProgress color="success" />
+        </Grid>
+      )}
+      <Grid item xs={6}>
+        <Button
+          color="success"
+          variant="contained"
+          style={{
+            margin: "10px",
+            height: "100px",
+            width: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={onAddNewClient}
+        >
+          <AddRounded
+            style={{
+              fontSize: "10cqh",
+              color: "white",
+            }}
+          />
+        </Button>
+      </Grid>
+    </Grid>
   );
 };

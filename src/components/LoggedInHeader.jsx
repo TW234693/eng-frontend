@@ -1,8 +1,8 @@
-import { Button, Menu, MenuItem } from "@mui/material";
+import { Button, Divider, Menu, MenuItem } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { useState } from "react";
 
-export const LoggedInHeader = ({ onLogOut, profile, navigation }) => {
+export const LoggedInHeader = ({ onLogOut, profile, navigation, isClient }) => {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const isOpened = Boolean(menuAnchor);
 
@@ -52,9 +52,29 @@ export const LoggedInHeader = ({ onLogOut, profile, navigation }) => {
             "aria-labelledby": "basic-button",
           }}
         >
-          <MenuItem onClick={handleClose}>Profile</MenuItem>
-          <MenuItem onClick={handleClose}>My account</MenuItem>
-          <MenuItem onClick={handleClose}>Logout</MenuItem>
+          {isClient ? null : (
+            <>
+              <MenuItem onClick={() => navigation("/home", { replace: true })}>
+                Home
+              </MenuItem>
+              <Divider />
+              <MenuItem
+                onClick={() => navigation("/myProfile", { replace: true })}
+              >
+                My Profile
+              </MenuItem>
+              <MenuItem
+                onClick={() => navigation("/myClients", { replace: true })}
+              >
+                Clients
+              </MenuItem>
+              <MenuItem
+                onClick={() => navigation("/myIngredients", { replace: true })}
+              >
+                Ingredients
+              </MenuItem>
+            </>
+          )}
         </Menu>
         <div
           onClick={goBack}

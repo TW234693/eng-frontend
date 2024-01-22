@@ -21,6 +21,7 @@ export const Home = ({ checkLoggedInState, isClient, token, profile }) => {
     : [
         { label: "My Profile", link: "/myProfile" },
         { label: "My Clients", link: "/myClients" },
+        { label: "My Ingredients", link: "/myIngredients" },
       ];
 
   return (

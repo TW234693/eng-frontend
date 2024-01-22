@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Button,
@@ -427,14 +427,13 @@ export const MealCard = ({
                           return null;
                         }
                         return (
-                          <>
+                          <React.Fragment key={index}>
                             {index > 0 ? <Divider /> : null}
                             <ListItem
                               style={{
                                 display: "flex",
                                 justifyContent: "space-between",
                               }}
-                              key={index}
                             >
                               <span>{nutrientInfo.label}:</span>
                               <span>
@@ -442,7 +441,7 @@ export const MealCard = ({
                                 {nutrientInfo.unit}
                               </span>
                             </ListItem>
-                          </>
+                          </React.Fragment>
                         );
                       }
                     )}
@@ -454,9 +453,9 @@ export const MealCard = ({
                 {ingredients.map((ingredient, index) => {
                   console.log(ingredient);
                   return (
-                    <>
+                    <React.Fragment key={index}>
                       {index > 0 ? <Divider /> : null}
-                      <ListItem key={index}>
+                      <ListItem>
                         <div
                           style={{
                             display: "flex",
@@ -477,7 +476,7 @@ export const MealCard = ({
                           </Button>
                         </div>
                       </ListItem>
-                    </>
+                    </React.Fragment>
                   );
                 })}
               </>

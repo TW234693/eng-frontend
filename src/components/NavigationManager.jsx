@@ -12,6 +12,7 @@ import { TestComponent } from "./TestComponent";
 import { AddMeal } from "../views/AddMeal";
 import { UserClientList } from "../views/UserClientList";
 import { Home } from "../views/Home";
+import { UserIngredientList } from "../views/UserIngredientList";
 
 export const NavigationManager = () => {
   const navigation = useNavigate();
@@ -111,6 +112,7 @@ export const NavigationManager = () => {
         profile={loggedInProfile}
         onLogOut={onLogOut}
         navigation={navigation}
+        isClient={isClient}
       ></Header>
       <div style={{ padding: "20px" }}>
         <Routes>
@@ -169,6 +171,20 @@ export const NavigationManager = () => {
             path="/myClients"
             element={
               <UserClientList
+                checkLoggedInState={checkLoggedInState}
+                email={
+                  loggedInProfile && loggedInProfile.email
+                    ? loggedInProfile.email
+                    : ""
+                }
+                token={loggedInToken}
+              />
+            }
+          />
+          <Route
+            path="/myIngredients"
+            element={
+              <UserIngredientList
                 checkLoggedInState={checkLoggedInState}
                 email={
                   loggedInProfile && loggedInProfile.email
