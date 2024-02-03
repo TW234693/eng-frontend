@@ -5,7 +5,7 @@ import { ArrowBack } from "@mui/icons-material";
 import { MealCard } from "../components/MealCard";
 import { NewIngredient } from "../components/NewIngredient";
 
-export const AddMeal = ({ checkLoggedInState }) => {
+export const AddMeal = ({ checkLoggedInState, token }) => {
   const [clientDetails, setClientDetails] = useState(null);
   const [mealIngredients, setMealingredients] = useState(null);
   const onAddIngredient = (newIngredient) => {
@@ -75,7 +75,7 @@ export const AddMeal = ({ checkLoggedInState }) => {
           />
         </Grid>
         <Grid item xs={6}>
-          <NewIngredient onAddIngredient={onAddIngredient} />
+          <NewIngredient onAddIngredient={onAddIngredient} token={token} />
         </Grid>
       </Grid>
     </>

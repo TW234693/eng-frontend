@@ -37,7 +37,7 @@ export const UserClientList = ({ checkLoggedInState, email, token }) => {
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12}>
+      <Grid xs={12}>
         <div
           style={{
             display: "flex",
@@ -67,7 +67,7 @@ export const UserClientList = ({ checkLoggedInState, email, token }) => {
           <CircularProgress color="success" />
         </Grid>
       )}
-      <Grid item xs={6}>
+      <Grid xs={6}>
         <Button
           color="success"
           variant="contained"

@@ -1,4 +1,4 @@
-import { useState, forwardRef } from "react";
+import React, { useState, forwardRef } from "react";
 import {
   Grid,
   Button,
@@ -6,6 +6,7 @@ import {
   CardActionArea,
   Dialog,
   DialogContent,
+  Divider,
 } from "@mui/material";
 import moment from "moment";
 import { Restaurant } from "@mui/icons-material";
@@ -222,29 +223,15 @@ export const MealCalendar = ({ clientMeals }) => {
                   onClose={closeDialog}
                   style={{ background: "rgba(0,0,0,0.5)" }}
                   TransitionComponent={Transition}
-                  // overlayStyle={{ backgroundColor: "transparent" }}
-                  // slotProps={{
-                  //   backdrop: {
-                  //     classes: {
-                  //       root: {
-                  //         backgroundColor: "transparent",
-                  //       },
-                  //     },
-                  //   },
-                  // }}
-                  // PaperProps={{
-                  //   classes: {
-                  //     paper: {
-                  //       backgroundColor: "transparent",
-                  //       boxShadow: "none",
-                  //       overflow: "hidden",
-                  //     },
-                  //   },
-                  // }}
                 >
                   <DialogContent>
                     {dialogMeals.map((meal, id) => {
-                      return <MealCalendarEntry meal={meal} key={id} />;
+                      return (
+                        <React.Fragment key={id}>
+                          {id > 0 ? <Divider /> : null}
+                          <MealCalendarEntry meal={meal} />
+                        </React.Fragment>
+                      );
                     })}
                   </DialogContent>
                 </Dialog>

@@ -52,28 +52,26 @@ export const LoggedInHeader = ({ onLogOut, profile, navigation, isClient }) => {
             "aria-labelledby": "basic-button",
           }}
         >
-          {isClient ? null : (
-            <>
-              <MenuItem onClick={() => navigation("/home", { replace: true })}>
-                Home
-              </MenuItem>
-              <Divider />
-              <MenuItem
-                onClick={() => navigation("/myProfile", { replace: true })}
-              >
-                My Profile
-              </MenuItem>
-              <MenuItem
-                onClick={() => navigation("/myClients", { replace: true })}
-              >
-                Clients
-              </MenuItem>
-              <MenuItem
-                onClick={() => navigation("/myIngredients", { replace: true })}
-              >
-                Ingredients
-              </MenuItem>
-            </>
+          <MenuItem onClick={() => navigation("/home", { replace: true })}>
+            Home
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={() => navigation("/myProfile", { replace: true })}>
+            My Profile
+          </MenuItem>
+          {!isClient && (
+            <MenuItem
+              onClick={() => navigation("/myClients", { replace: true })}
+            >
+              Clients
+            </MenuItem>
+          )}
+          {!isClient && (
+            <MenuItem
+              onClick={() => navigation("/myIngredients", { replace: true })}
+            >
+              Ingredients
+            </MenuItem>
           )}
         </Menu>
         <div

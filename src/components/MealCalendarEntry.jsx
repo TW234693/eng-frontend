@@ -34,10 +34,9 @@ export const MealCalendarEntry = ({ meal }) => {
   return (
     <div
       style={{
-        borderRadius: "5px",
         display: "flex",
         alignItems: "center",
-        margin: "5px",
+        padding: "5px",
         justifyContent: "space-between",
         fontWeight: "bold",
         width: "30vw",
@@ -45,7 +44,24 @@ export const MealCalendarEntry = ({ meal }) => {
       }}
       onClick={onDetails}
     >
-      <p>{meal.name}</p>
+      <div>
+        <img
+          src={meal.photo}
+          style={{
+            objectFit: "fill",
+            maxHeight: "100px",
+            minHeight: "100px",
+            minWidth: "100px",
+            maxWidth: "100px",
+            margin: "0 10px",
+            display: "inline",
+          }}
+        />
+      </div>
+      <div>
+        <p>{meal.name}</p>
+        <p>Cooking time: {meal.minutesCookingTime} min.</p>
+      </div>
       <div>
         <Button onClick={(e) => onDelete(e)} variant="outlined" color="error">
           <DeleteForever />

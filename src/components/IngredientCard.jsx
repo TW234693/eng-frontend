@@ -7,7 +7,6 @@ import {
   Divider,
   List,
   ListItem,
-  ListItemText,
   TextField,
   InputAdornment,
   Alert,
@@ -263,29 +262,32 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
           </>
         )}
         <ListItem>
-          {inEditMode ? (
-            <TextField
-              label={"Ingredient picture URL"}
-              type="url"
-              value={photo}
-              placeholder="(Default image)"
-              onChange={(e) => setPhoto(e.target.value)}
-              onBlur={(e) =>
-                setPhoto(e.target.value ? e.target.value : defaultPhoto)
-              }
-              fullWidth
-            />
-          ) : (
-            <ListItemText
-              style={{
-                whiteSpace: "pre-wrap",
-                display: `${isEditable ? "auto" : "none"}`,
-              }}
-              primary={`Ingredient picture :\n${
-                photo !== defaultPhoto ? photo : "(Default image)"
-              }`}
-            />
-          )}
+          {
+            inEditMode ? (
+              <TextField
+                label={"Ingredient picture URL"}
+                type="url"
+                value={photo}
+                placeholder="(Default image)"
+                onChange={(e) => setPhoto(e.target.value)}
+                onBlur={(e) =>
+                  setPhoto(e.target.value ? e.target.value : defaultPhoto)
+                }
+                fullWidth
+              />
+            ) : null
+            // (
+            //   <ListItemText
+            //     style={{
+            //       whiteSpace: "pre-wrap",
+            //       display: `${isEditable ? "auto" : "none"}`,
+            //     }}
+            //     primary={`Ingredient picture :\n${
+            //       photo !== defaultPhoto ? photo : "(Default image)"
+            //     }`}
+            //   />
+            // )
+          }
         </ListItem>
         <ListItem>
           {!inEditMode ? (

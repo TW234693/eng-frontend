@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Axios from "axios";
 import { TextField, FormControl, Button, Alert } from "@mui/material";
+import { ArrowBack } from "@mui/icons-material";
 
 const EMAIL_REGEX =
   /^(?:(?:[^<>()[\]\\.,;:\s@"]+(?:\.[^<>()[\]\\.,;:\s@"]+)*)|.(?:".+"))@(?:(?:\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(?:(?:[a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -61,6 +62,10 @@ export const AssignNewClient = ({ navigation, checkLoggedInState }) => {
       });
   };
 
+  const goBack = () => {
+    navigation("/myClients", { replace: true });
+  };
+
   if (!token || !userEmail) {
     checkLoggedInState();
     return null;
@@ -74,6 +79,20 @@ export const AssignNewClient = ({ navigation, checkLoggedInState }) => {
         alignItems: "center",
       }}
     >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-around",
+        }}
+      >
+        <Button
+          onClick={goBack}
+          variant={"contained"}
+          startIcon={<ArrowBack />}
+        >
+          Go back
+        </Button>
+      </div>
       <FormControl
         style={{
           minWidth: "30%",

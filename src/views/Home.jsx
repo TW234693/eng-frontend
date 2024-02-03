@@ -38,10 +38,9 @@ export const Home = ({ checkLoggedInState, isClient, token, profile }) => {
             return (
               <Grid
                 item
-                xs={3}
+                xs={6}
                 style={{
                   minHeight: "150px",
-                  aspectRatio: "1/1",
                   padding: "10px",
                 }}
                 key={index}

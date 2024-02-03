@@ -211,7 +211,12 @@ export const NavigationManager = () => {
           />
           <Route
             path="/clientDetails/:id/addMeal"
-            element={<AddMeal checkLoggedInState={checkLoggedInState} />}
+            element={
+              <AddMeal
+                checkLoggedInState={checkLoggedInState}
+                token={loggedInToken}
+              />
+            }
           />
           <Route path="/test" element={<TestComponent />} />
         </Routes>
