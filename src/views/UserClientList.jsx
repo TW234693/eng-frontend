@@ -51,6 +51,14 @@ export const UserClientList = ({ checkLoggedInState, email, token }) => {
           >
             Go back
           </Button>
+          <Button
+            onClick={onAddNewClient}
+            color="success"
+            variant="contained"
+            startIcon={<AddRounded />}
+          >
+            Add a new client
+          </Button>
         </div>
       </Grid>
       {userClients ? (
@@ -67,28 +75,6 @@ export const UserClientList = ({ checkLoggedInState, email, token }) => {
           <CircularProgress color="success" />
         </Grid>
       )}
-      <Grid xs={6}>
-        <Button
-          color="success"
-          variant="contained"
-          style={{
-            margin: "10px",
-            height: "100px",
-            width: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onClick={onAddNewClient}
-        >
-          <AddRounded
-            style={{
-              fontSize: "10cqh",
-              color: "white",
-            }}
-          />
-        </Button>
-      </Grid>
     </Grid>
   );
 };

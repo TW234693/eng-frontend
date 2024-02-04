@@ -16,11 +16,21 @@ import moment from "moment";
 import Axios from "axios";
 import { NUTRIENTS } from "../utils/Nutrients";
 
+const emptyMeal = {
+  name: "",
+  instructions: "",
+  minutesCookingTime: 0,
+  mealDate: moment.utc(),
+  photo: "",
+};
+
 export const MealCard = ({
+  isEditable,
   ingredients,
   clientDetails,
   onRemoveIngredient,
   checkLoggedInState,
+  initialMealData = emptyMeal,
 }) => {
   const [responseMessage, setResponseMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -38,9 +48,9 @@ export const MealCard = ({
     setShowNutrients(!showNutrients);
   };
 
-  const [mealPhoto, setMealPhoto] = useState("");
+  const [mealPhoto, setMealPhoto] = useState(initialMealData.photo);
 
-  const [mealName, setMealName] = useState("");
+  const [mealName, setMealName] = useState(initialMealData.name);
   const [mealNameError, setMealNameError] = useState("");
   useEffect(() => {
     if (!mealName) {
@@ -50,7 +60,9 @@ export const MealCard = ({
     setMealNameError("");
   }, [mealName]);
 
-  const [mealInstructions, setMealInstructions] = useState("");
+  const [mealInstructions, setMealInstructions] = useState(
+    initialMealData.instructions
+  );
   const [mealInstructionsError, setMealInstructionsError] = useState("");
   useEffect(() => {
     if (!mealInstructions) {
@@ -62,7 +74,9 @@ export const MealCard = ({
     }
   }, [mealInstructions]);
 
-  const [mealMinutesCookingTime, setMealMinutesCookingTime] = useState(0);
+  const [mealMinutesCookingTime, setMealMinutesCookingTime] = useState(
+    initialMealData.minutesCookingTime
+  );
   const [mealMinutesCookingTimeError, setMealMinutesCookingTimeError] =
     useState("");
   useEffect(() => {
@@ -75,7 +89,7 @@ export const MealCard = ({
     setMealMinutesCookingTimeError("");
   }, [mealMinutesCookingTime]);
 
-  const [mealDate, setMealDate] = useState(moment.utc());
+  const [mealDate, setMealDate] = useState(initialMealData.mealDate);
   const [mealDateError, setMealDateError] = useState("");
   useEffect(() => {
     if (!mealDate) {
@@ -93,7 +107,7 @@ export const MealCard = ({
 
     setOpenSnackbar(false);
   };
-  const onAddNewMeal = () => {
+  const onAddOrEditMeal = () => {
     setShowErrors(true);
 
     if (
@@ -154,28 +168,42 @@ export const MealCard = ({
       return;
     }
 
-    Axios.post(
-      `//localhost:3500/meals/createMeal/clientEmail=${clientDetails.email}`,
-      mealRequestObject,
-      {
-        headers: { Authorization: `Bearer ${loggedInUserToken}` },
-      }
-    )
-      .then((res) => {
-        const responseMessage = res.data.message;
-        setShowErrors(false);
-        setResponseMessage(responseMessage);
-        setOpenSnackbar(true);
-        setSuccess(true);
-        console.log(responseMessage);
-      })
-      .catch((error) => {
-        const responseMessage = error.response.data.message;
-        console.log(responseMessage);
-        setOpenSnackbar(true);
-        setSuccess(false);
-        setResponseMessage(responseMessage);
-      });
+    const requestURL = `//localhost:3500/meals/${
+      initialMealData
+        ? `updateMeal/id=${initialMealData._id}`
+        : `createMeal/clientEmail=${clientDetails.email}`
+    }`;
+
+    const headers = {
+      headers: { Authorization: `Bearer ${loggedInUserToken}` },
+    };
+
+    const onRequestSuccess = (res) => {
+      const responseMessage = res.data.message;
+      setShowErrors(false);
+      setResponseMessage(responseMessage);
+      setOpenSnackbar(true);
+      setSuccess(true);
+      // console.log(responseMessage);
+    };
+
+    const onRequestFail = (error) => {
+      const responseMessage = error.response.data.message;
+      // console.log(responseMessage);
+      setOpenSnackbar(true);
+      setSuccess(false);
+      setResponseMessage(responseMessage);
+    };
+
+    if (initialMealData) {
+      Axios.patch(requestURL, mealRequestObject, headers)
+        .then(onRequestSuccess)
+        .catch(onRequestFail);
+    } else {
+      Axios.post(requestURL, mealRequestObject, headers)
+        .then(onRequestSuccess)
+        .catch(onRequestFail);
+    }
   };
 
   return (
@@ -205,38 +233,44 @@ export const MealCard = ({
         }}
       />
       <List style={{ width: "80%" }}>
-        <ListItem>
-          <Button
-            onClick={toggleEditMode}
-            startIcon={editMode ? <Save /> : <Edit />}
-            fullWidth
-          >
-            {editMode ? "Save changes" : "Start editing"}
-          </Button>
-        </ListItem>
-        <ListItem>
-          <Button
-            onClick={onAddNewMeal}
-            startIcon={<Add />}
-            fullWidth
-            color="success"
-          >
-            Finish and add the meal
-          </Button>
-          <Snackbar
-            open={openSnackbar}
-            autoHideDuration={6000}
-            onClose={handleClose}
-          >
-            <Alert
-              onClose={handleClose}
-              severity={success ? "success" : "error"}
-              sx={{ width: "100%" }}
-            >
-              {responseMessage}
-            </Alert>
-          </Snackbar>
-        </ListItem>
+        {isEditable ? (
+          <>
+            <ListItem disablePadding>
+              <Button
+                onClick={toggleEditMode}
+                startIcon={editMode ? <Save /> : <Edit />}
+                fullWidth
+              >
+                {editMode ? "Save changes" : "Start editing"}
+              </Button>
+            </ListItem>
+            <ListItem disablePadding>
+              <Button
+                onClick={onAddOrEditMeal}
+                startIcon={<Add />}
+                fullWidth
+                color="success"
+              >
+                {initialMealData
+                  ? "Finish and save the meal"
+                  : "Finish and add the meal"}
+              </Button>
+              <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={handleClose}
+              >
+                <Alert
+                  onClose={handleClose}
+                  severity={success ? "success" : "error"}
+                  sx={{ width: "100%" }}
+                >
+                  {responseMessage}
+                </Alert>
+              </Snackbar>
+            </ListItem>
+          </>
+        ) : null}
 
         {addMealError ? (
           <ListItem fullWidth>
@@ -246,16 +280,7 @@ export const MealCard = ({
           </ListItem>
         ) : null}
         <ListItem disablePadding>
-          {!editMode ? (
-            <ListItemText
-              style={{
-                whiteSpace: "pre-wrap",
-              }}
-              primary={`Meal image URL:\n${
-                mealPhoto ? mealPhoto : "(Default image)"
-              }`}
-            />
-          ) : (
+          {editMode && isEditable ? (
             <TextField
               label={"Meal Photo URL"}
               type="url"
@@ -265,13 +290,19 @@ export const MealCard = ({
               sx={{ m: "10px" }}
               fullWidth
             />
-          )}
+          ) : // <ListItemText
+          //   style={{
+          //     whiteSpace: "pre-wrap",
+          //   }}
+          //   primary={`Meal image URL:\n${
+          //     mealPhoto ? mealPhoto : "(Default image)"
+          //   }`}
+          // />
+          null}
         </ListItem>
         <Divider />
         <ListItem disablePadding>
-          {!editMode ? (
-            <ListItemText primary={`Meal name: ${mealName}`} />
-          ) : (
+          {editMode && isEditable ? (
             <>
               <TextField
                 label={"Meal Name"}
@@ -289,15 +320,13 @@ export const MealCard = ({
                 </Alert>
               ) : null}
             </>
+          ) : (
+            <ListItemText primary={`Meal name: ${mealName}`} />
           )}
         </ListItem>
         <Divider />
         <ListItem disablePadding>
-          {!editMode ? (
-            <ListItemText
-              primary={`Cooking time: ${mealMinutesCookingTime} minutes`}
-            />
-          ) : (
+          {editMode && isEditable ? (
             <>
               <TextField
                 label={"Cooking time in minutes"}
@@ -323,17 +352,15 @@ export const MealCard = ({
                 </Alert>
               ) : null}
             </>
+          ) : (
+            <ListItemText
+              primary={`Cooking time: ${mealMinutesCookingTime} minutes`}
+            />
           )}
         </ListItem>
         <Divider />
         <ListItem disablePadding>
-          {!editMode ? (
-            <ListItemText
-              primary={`Meal date: ${moment(mealDate).format(
-                "dddd (YYYY.MM.DD)"
-              )}`}
-            />
-          ) : (
+          {editMode && isEditable ? (
             <>
               <TextField
                 label={"Meal Date"}
@@ -351,16 +378,17 @@ export const MealCard = ({
                 </Alert>
               ) : null}
             </>
+          ) : (
+            <ListItemText
+              primary={`Meal date: ${moment(mealDate).format(
+                "dddd (YYYY.MM.DD)"
+              )}`}
+            />
           )}
         </ListItem>
         <Divider />
         <ListItem disablePadding>
-          {!editMode ? (
-            <ListItemText
-              style={{ whiteSpace: "pre-wrap" }}
-              primary={`Recipe:\n${mealInstructions}`}
-            />
-          ) : (
+          {editMode && isEditable ? (
             <>
               <TextField
                 multiline
@@ -383,6 +411,11 @@ export const MealCard = ({
                 </Alert>
               ) : null}
             </>
+          ) : (
+            <ListItemText
+              style={{ whiteSpace: "pre-wrap" }}
+              primary={`Recipe:\n${mealInstructions}`}
+            />
           )}
         </ListItem>
 
@@ -414,8 +447,8 @@ export const MealCard = ({
                   },
                   {}
                 );
-                console.log("nutrients");
-                console.log(nutrients);
+                // console.log("nutrients");
+                // console.log(nutrients);
                 return (
                   <>
                     {Object.entries(nutrients).map(
@@ -451,7 +484,6 @@ export const MealCard = ({
             ) : (
               <>
                 {ingredients.map((ingredient, index) => {
-                  console.log(ingredient);
                   return (
                     <React.Fragment key={index}>
                       {index > 0 ? <Divider /> : null}
@@ -467,13 +499,15 @@ export const MealCard = ({
                           <span>
                             {ingredient.name} ({ingredient.quantityGrams}g)
                           </span>
-                          <Button
-                            variant="outlined"
-                            color="error"
-                            onClick={() => onRemoveIngredient(ingredient)}
-                          >
-                            <DeleteForever />
-                          </Button>
+                          {isEditable ? (
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              onClick={() => onRemoveIngredient(ingredient)}
+                            >
+                              <DeleteForever />
+                            </Button>
+                          ) : null}
                         </div>
                       </ListItem>
                     </React.Fragment>

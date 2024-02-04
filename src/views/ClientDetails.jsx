@@ -28,10 +28,9 @@ export const ClientDetails = ({ checkLoggedInState }) => {
   const email = localStorage.getItem("email");
   const token = localStorage.getItem("token");
 
-  // if (!email || !token || !roles || !id) {
-  //   console.log("no")
-  //   checkLoggedInState();
-  // }
+  if (!email || !token || !roles || !id) {
+    checkLoggedInState();
+  }
 
   useEffect(() => {
     Axios.get(`//localhost:3500/users/getClients/email=${email}`, {
@@ -110,7 +109,7 @@ export const ClientDetails = ({ checkLoggedInState }) => {
     <>
       {dataFetched ? (
         <>
-          <Grid container spacing={3} padding="10px">
+          <Grid container spacing={3}>
             <Grid item xs={12}>
               <div
                 style={{
@@ -144,7 +143,10 @@ export const ClientDetails = ({ checkLoggedInState }) => {
             </Grid>
             <Grid item xs={8}>
               {clientMeals && hasMeals ? (
-                <MealCalendar clientMeals={clientMeals} />
+                <MealCalendar
+                  clientMeals={clientMeals}
+                  clientDetails={clientDetails}
+                />
               ) : (
                 <h3>
                   This client has no meals. You can start creating a meal with

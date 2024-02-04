@@ -1,3 +1,4 @@
+import { Groups2, Kitchen, ManageAccounts } from "@mui/icons-material";
 import { Button, Grid, CircularProgress } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
@@ -17,11 +18,11 @@ export const Home = ({ checkLoggedInState, isClient, token, profile }) => {
   }
 
   const links = isClient
-    ? [{ label: "My Profile", link: "/myProfile" }]
+    ? [{ label: "My Profile", link: "/myProfile", icon: <ManageAccounts /> }]
     : [
-        { label: "My Profile", link: "/myProfile" },
-        { label: "My Clients", link: "/myClients" },
-        { label: "My Ingredients", link: "/myIngredients" },
+        { label: "My Profile", link: "/myProfile", icon: <ManageAccounts /> },
+        { label: "My Clients", link: "/myClients", icon: <Groups2 /> },
+        { label: "My Ingredients", link: "/myIngredients", icon: <Kitchen /> },
       ];
 
   return (
@@ -49,8 +50,9 @@ export const Home = ({ checkLoggedInState, isClient, token, profile }) => {
                   style={{
                     minWidth: "100%",
                     minHeight: "100%",
-                    backgroundColor: "rgba(255,255,255, 0.2)",
-                    border: "2px solid rgb(0,0,255)",
+                    backgroundColor: "rgba(255,255,255, 1)",
+                    border: "2px solid rgb(50,120,255)",
+                    borderRadius: "15px",
                   }}
                   onClick={() =>
                     navigation(link.link, {
@@ -58,7 +60,17 @@ export const Home = ({ checkLoggedInState, isClient, token, profile }) => {
                     })
                   }
                 >
-                  {link.label}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <div style={{ flexGrow: 3, transform: "scale(2)" }}>
+                      {link.icon}
+                    </div>
+                    <div style={{ flexGrow: 1 }}>{link.label}</div>
+                  </div>
                 </Button>
               </Grid>
             );

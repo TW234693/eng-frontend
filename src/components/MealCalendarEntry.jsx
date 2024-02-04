@@ -1,14 +1,17 @@
 import { Button } from "@mui/material";
 import { Edit, DeleteForever } from "@mui/icons-material";
 import Axios from "axios";
+import { MealCard } from "../components/MealCard";
+import { useNavigate } from "react-router-dom";
 
-export const MealCalendarEntry = ({ meal }) => {
-  const onDetails = () => {
-    console.log(meal);
-  };
+export const MealCalendarEntry = ({ meal, isEditable, clientDetails }) => {
+  const navigation = useNavigate();
 
   const onDelete = (e) => {
     e.stopPropagation();
+    if (!isEditable) {
+      return;
+    }
 
     const loggedInUserToken = localStorage.getItem("token");
 
@@ -28,48 +31,42 @@ export const MealCalendarEntry = ({ meal }) => {
 
   const onEdit = (e) => {
     e.stopPropagation();
-    console.log("edit");
+    if (!isEditable) {
+      return;
+    }
+    console.log(meal);
+    navigation(`editMeal/${meal._id}`, { state: { clientDetails, meal } });
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        padding: "5px",
-        justifyContent: "space-between",
-        fontWeight: "bold",
-        width: "30vw",
-        cursor: "pointer",
-      }}
-      onClick={onDetails}
-    >
-      <div>
-        <img
-          src={meal.photo}
-          style={{
-            objectFit: "fill",
-            maxHeight: "100px",
-            minHeight: "100px",
-            minWidth: "100px",
-            maxWidth: "100px",
-            margin: "0 10px",
-            display: "inline",
-          }}
-        />
-      </div>
-      <div>
-        <p>{meal.name}</p>
-        <p>Cooking time: {meal.minutesCookingTime} min.</p>
-      </div>
-      <div>
+    <>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          padding: "5px",
+          justifyContent: "space-between",
+          fontWeight: "bold",
+          gap: "5%",
+          cursor: "pointer",
+        }}
+      >
         <Button onClick={(e) => onDelete(e)} variant="outlined" color="error">
-          <DeleteForever />
+          <DeleteForever /> Delete
         </Button>
         <Button onClick={(e) => onEdit(e)} variant="outlined">
-          <Edit />
+          <Edit /> Edit
         </Button>
       </div>
-    </div>
+
+      <MealCard
+        ingredients={meal.ingredients}
+        isEditable={false}
+        clientDetails={null}
+        onRemoveIngredient={() => {}}
+        checkLoggedInState={() => {}}
+        initialMealData={meal}
+      />
+    </>
   );
 };

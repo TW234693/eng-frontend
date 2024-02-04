@@ -9,7 +9,7 @@ import { ClientDetails } from "../views/ClientDetails";
 import React, { useEffect, useState, useCallback } from "react";
 import { Header } from "./Header";
 import { TestComponent } from "./TestComponent";
-import { AddMeal } from "../views/AddMeal";
+import { AddOrEditMeal } from "../views/AddMeal";
 import { UserClientList } from "../views/UserClientList";
 import { Home } from "../views/Home";
 import { UserIngredientList } from "../views/UserIngredientList";
@@ -212,7 +212,16 @@ export const NavigationManager = () => {
           <Route
             path="/clientDetails/:id/addMeal"
             element={
-              <AddMeal
+              <AddOrEditMeal
+                checkLoggedInState={checkLoggedInState}
+                token={loggedInToken}
+              />
+            }
+          />
+          <Route
+            path="/clientDetails/:id/editMeal/:mealId"
+            element={
+              <AddOrEditMeal
                 checkLoggedInState={checkLoggedInState}
                 token={loggedInToken}
               />

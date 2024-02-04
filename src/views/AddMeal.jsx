@@ -5,9 +5,10 @@ import { ArrowBack } from "@mui/icons-material";
 import { MealCard } from "../components/MealCard";
 import { NewIngredient } from "../components/NewIngredient";
 
-export const AddMeal = ({ checkLoggedInState, token }) => {
+export const AddOrEditMeal = ({ checkLoggedInState, token }) => {
   const [clientDetails, setClientDetails] = useState(null);
   const [mealIngredients, setMealingredients] = useState(null);
+  const [initialMealData, setInitialMealData] = useState(null);
   const onAddIngredient = (newIngredient) => {
     if (Array.isArray(mealIngredients)) {
       setMealingredients([...mealIngredients, newIngredient]);
@@ -37,8 +38,14 @@ export const AddMeal = ({ checkLoggedInState, token }) => {
   };
 
   useEffect(() => {
-    if (location.state && location.state.clientDetails) {
-      setClientDetails(location.state.clientDetails);
+    if (location.state) {
+      if (location.state.clientDetails) {
+        setClientDetails(location.state.clientDetails);
+      }
+      if (location.state.meal) {
+        setMealingredients(location.state.meal.ingredients);
+        setInitialMealData(location.state.meal);
+      }
     }
   }, [location.state]);
 
@@ -69,9 +76,13 @@ export const AddMeal = ({ checkLoggedInState, token }) => {
         <Grid item xs={6}>
           <MealCard
             ingredients={mealIngredients}
+            isEditable={true}
             clientDetails={clientDetails}
             onRemoveIngredient={onRemoveIngredient}
             checkLoggedInState={checkLoggedInState}
+            initialMealData={
+              initialMealData !== null ? initialMealData : undefined
+            }
           />
         </Grid>
         <Grid item xs={6}>

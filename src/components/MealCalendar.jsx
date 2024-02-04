@@ -6,7 +6,6 @@ import {
   CardActionArea,
   Dialog,
   DialogContent,
-  Divider,
 } from "@mui/material";
 import moment from "moment";
 import { Restaurant } from "@mui/icons-material";
@@ -18,7 +17,7 @@ const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export const MealCalendar = ({ clientMeals }) => {
+export const MealCalendar = ({ clientMeals, clientDetails }) => {
   clientMeals = clientMeals.sort((a, b) => {
     return moment(a.mealDate) - moment(b.mealDate);
   });
@@ -205,34 +204,37 @@ export const MealCalendar = ({ clientMeals }) => {
                   onClick={() => openDialog(mealsThisDay)}
                 >
                   <h3>{`${dayOfMonth.format("DD.MM")}`}</h3>
-                  {
-                    !mealsThisDay.length ? null : (
-                      <Restaurant style={{ marginBottom: "5px" }} />
-                    )
-                    // mealsThisDay.map((meal, id) => {
-                    //     return <MealCalendarEntry meal={meal} key={id} />;
-                    //   })
-                  }
+                  {!mealsThisDay.length ? null : (
+                    <Restaurant style={{ marginBottom: "5px" }} />
+                  )}
                 </CardActionArea>
                 <Dialog
                   open={
                     dialogOpened &&
                     isEqual(mealsThisDay, dialogMeals) &&
-                    mealsThisDay.length
+                    mealsThisDay.length > 0
                   }
                   onClose={closeDialog}
                   style={{ background: "rgba(0,0,0,0.5)" }}
                   TransitionComponent={Transition}
+                  fullWidth
+                  maxWidth="lg"
                 >
                   <DialogContent>
-                    {dialogMeals.map((meal, id) => {
-                      return (
-                        <React.Fragment key={id}>
-                          {id > 0 ? <Divider /> : null}
-                          <MealCalendarEntry meal={meal} />
-                        </React.Fragment>
-                      );
-                    })}
+                    <Grid container spacing={4}>
+                      {dialogMeals.map((meal, id) => {
+                        return (
+                          <Grid item xs={6} key={id}>
+                            <MealCalendarEntry
+                              meal={meal}
+                              isEditable={true}
+                              clientDetails={clientDetails}
+                              style={{ border: "none", boxShadow: "none" }}
+                            />
+                          </Grid>
+                        );
+                      })}
+                    </Grid>
                   </DialogContent>
                 </Dialog>
               </Card>
