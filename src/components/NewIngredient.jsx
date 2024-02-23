@@ -207,13 +207,17 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
 
           <ListItem>
             <TextField
-              label={"Search"}
               type="text"
               value={searchQuery}
               placeholder="Ingredient name"
               onChange={(e) => setSearchQuery(e.target.value)}
               sx={{ m: "10px" }}
               fullWidth
+              InputProps={{
+                style: {
+                  backgroundColor: "white",
+                },
+              }}
             />
             <Button variant="contained" onClick={onSearch}>
               <Search />

@@ -1,5 +1,6 @@
-import { Button } from "@mui/material";
-import { Menu } from "@mui/icons-material";
+import { useState } from "react";
+import { Menu as MenuIcon } from "@mui/icons-material";
+import { Button, Divider, Menu, MenuItem } from "@mui/material";
 
 export const GuestHeader = ({ navigation }) => {
   const goToLogIn = () => {
@@ -8,6 +9,16 @@ export const GuestHeader = ({ navigation }) => {
 
   const goToRegister = () => {
     navigation("/register", { replace: true });
+  };
+
+  const [menuAnchor, setMenuAnchor] = useState(null);
+  const isOpened = Boolean(menuAnchor);
+
+  const handleMenuButtonClick = (e) => {
+    setMenuAnchor(e.currentTarget);
+  };
+  const handleClose = () => {
+    setMenuAnchor(null);
   };
 
   return (
@@ -29,9 +40,30 @@ export const GuestHeader = ({ navigation }) => {
           alignItems: "center",
         }}
       >
-        <Button>
-          <Menu />
+        <Button
+          onClick={(e) => handleMenuButtonClick(e)}
+          aria-controls={isOpened ? "basic-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={isOpened ? "true" : undefined}
+        >
+          <MenuIcon />
         </Button>
+        <Menu
+          id="basic-menu"
+          anchorEl={menuAnchor}
+          open={isOpened}
+          onClose={handleClose}
+          MenuListProps={{
+            "aria-labelledby": "basic-button",
+          }}
+        >
+          <MenuItem onClick={goToRegister}>Register</MenuItem>
+          <MenuItem onClick={goToLogIn}>Login</MenuItem>
+          <Divider />
+          <MenuItem onClick={() => navigation("/community", { replace: true })}>
+            Community
+          </MenuItem>
+        </Menu>
       </div>
       <div
         style={{

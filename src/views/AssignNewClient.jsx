@@ -31,9 +31,9 @@ export const AssignNewClient = ({ navigation, checkLoggedInState }) => {
   const handleAssign = (event) => {
     event.preventDefault();
 
-    if (emailError) {
-      return;
-    }
+    // if (emailError) {
+    //   return;
+    // }
 
     if (!userEmail || !token) {
       checkLoggedInState();

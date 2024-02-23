@@ -59,6 +59,9 @@ export const LoggedInHeader = ({ onLogOut, profile, navigation, isClient }) => {
           <MenuItem onClick={() => navigation("/myProfile", { replace: true })}>
             My Profile
           </MenuItem>
+          <MenuItem onClick={() => navigation("/community", { replace: true })}>
+            Community
+          </MenuItem>
           {!isClient && (
             <MenuItem
               onClick={() => navigation("/myClients", { replace: true })}
@@ -71,6 +74,11 @@ export const LoggedInHeader = ({ onLogOut, profile, navigation, isClient }) => {
               onClick={() => navigation("/myIngredients", { replace: true })}
             >
               Ingredients
+            </MenuItem>
+          )}
+          {isClient && (
+            <MenuItem onClick={() => navigation("/myMeals", { replace: true })}>
+              My Meals
             </MenuItem>
           )}
         </Menu>
@@ -95,7 +103,7 @@ export const LoggedInHeader = ({ onLogOut, profile, navigation, isClient }) => {
               maxWidth: "50px",
               margin: "10px",
               objectFit: "fill",
-              borderRadius: "50%",
+              borderRadius: "3px",
             }}
             alt="Profile"
           ></img>

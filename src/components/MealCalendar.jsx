@@ -17,7 +17,11 @@ const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export const MealCalendar = ({ clientMeals, clientDetails }) => {
+export const MealCalendar = ({
+  clientMeals,
+  clientDetails,
+  isEditable = true,
+}) => {
   clientMeals = clientMeals.sort((a, b) => {
     return moment(a.mealDate) - moment(b.mealDate);
   });
@@ -227,7 +231,7 @@ export const MealCalendar = ({ clientMeals, clientDetails }) => {
                           <Grid item xs={6} key={id}>
                             <MealCalendarEntry
                               meal={meal}
-                              isEditable={true}
+                              isEditable={isEditable}
                               clientDetails={clientDetails}
                               style={{ border: "none", boxShadow: "none" }}
                             />

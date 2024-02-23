@@ -19,6 +19,6 @@ export const Profile = ({ checkLoggedInState, isClient, token, profile }) => {
     // return <UserClientList email={email} token={token} />;
   }
   if (token && isClient && profile) {
-    return <ClientProfile email={profile.email} token={token} />;
+    return <ClientProfile profile={profile} token={token} />;
   }
 };

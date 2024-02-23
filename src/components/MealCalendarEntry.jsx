@@ -42,7 +42,7 @@ export const MealCalendarEntry = ({ meal, isEditable, clientDetails }) => {
     <>
       <div
         style={{
-          display: "flex",
+          display: isEditable ? "flex" : "none",
           alignItems: "center",
           padding: "5px",
           justifyContent: "space-between",

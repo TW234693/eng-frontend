@@ -13,6 +13,8 @@ import { AddOrEditMeal } from "../views/AddMeal";
 import { UserClientList } from "../views/UserClientList";
 import { Home } from "../views/Home";
 import { UserIngredientList } from "../views/UserIngredientList";
+import { Community } from "../views/Community";
+import { MyMealsCalendar } from "../views/MyMealsCalendar";
 
 export const NavigationManager = () => {
   const navigation = useNavigate();
@@ -34,7 +36,8 @@ export const NavigationManager = () => {
     setLoggedInToken(null);
     if (
       !window.location.href.endsWith("/login") &&
-      !window.location.href.endsWith("/register")
+      !window.location.href.endsWith("/register") &&
+      !window.location.href.endsWith("/community")
     ) {
       navigation("/login", { replace: true });
     }
@@ -220,14 +223,28 @@ export const NavigationManager = () => {
           />
           <Route
             path="/clientDetails/:id/editMeal/:mealId"
+            element={<AddOrEditMeal token={loggedInToken} />}
+          />
+          <Route
+            path="/community"
             element={
-              <AddOrEditMeal
+              <Community
                 checkLoggedInState={checkLoggedInState}
-                token={loggedInToken}
+                loggedIn={loggedInProfile !== null}
               />
             }
           />
           <Route path="/test" element={<TestComponent />} />
+          <Route
+            path="/myMeals"
+            element={
+              <MyMealsCalendar
+                profile={loggedInProfile}
+                token={loggedInToken}
+                checkLoggedInState={checkLoggedInState}
+              />
+            }
+          />
         </Routes>
       </div>
     </>

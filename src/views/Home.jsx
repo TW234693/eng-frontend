@@ -1,4 +1,10 @@
-import { Groups2, Kitchen, ManageAccounts } from "@mui/icons-material";
+import {
+  Diversity2,
+  Kitchen,
+  ManageAccounts,
+  PeopleAlt,
+  Restaurant,
+} from "@mui/icons-material";
 import { Button, Grid, CircularProgress } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
@@ -18,11 +24,16 @@ export const Home = ({ checkLoggedInState, isClient, token, profile }) => {
   }
 
   const links = isClient
-    ? [{ label: "My Profile", link: "/myProfile", icon: <ManageAccounts /> }]
-    : [
+    ? [
         { label: "My Profile", link: "/myProfile", icon: <ManageAccounts /> },
-        { label: "My Clients", link: "/myClients", icon: <Groups2 /> },
-        { label: "My Ingredients", link: "/myIngredients", icon: <Kitchen /> },
+        { label: "Community", link: "/community", icon: <Diversity2 /> },
+        { label: "My Meals", link: "/myMeals", icon: <Restaurant /> },
+      ]
+    : [
+        { label: "Profile", link: "/myProfile", icon: <ManageAccounts /> },
+        { label: "Clients", link: "/myClients", icon: <PeopleAlt /> },
+        { label: "Ingredients", link: "/myIngredients", icon: <Kitchen /> },
+        { label: "Community", link: "/community", icon: <Diversity2 /> },
       ];
 
   return (

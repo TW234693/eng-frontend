@@ -8,12 +8,9 @@ import {
   Alert,
   TextField,
   ListItemText,
-  Typography,
   IconButton,
   InputAdornment,
   Snackbar,
-  Rating,
-  Tooltip,
 } from "@mui/material";
 import Axios from "axios";
 import { useEffect, useState } from "react";
@@ -24,9 +21,7 @@ import {
   EditOff,
   Visibility,
   VisibilityOff,
-  StarBorder,
 } from "@mui/icons-material";
-// import { black } from "@mui/material/colors";
 
 const PASSWORD_LOWERCASE_REGEX = /^(?=.*[a-z]).*$/;
 const PASSWORD_UPPERCASE_REGEX = /^(?=.*[A-Z]).*$/;
@@ -34,7 +29,7 @@ const PASSWORD_NUMBER_REGEX = /^(?=.*[0-9]).*$/;
 const PASSWORD_SPECIAL_REGEX = /^(?=.*[!@#$%^&*]).*$/;
 const PASSWORD_LENGTH_REGEX = /^.{8,32}$/;
 
-export const UserProfileCard = ({ profile, token, fullHeight = true }) => {
+export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
   const isEditable = !!token;
   const defaultPhoto = "https://www.w3schools.com/howto/img_avatar.png";
   const [responseMsg, setResponseMsg] = useState("");
@@ -49,7 +44,6 @@ export const UserProfileCard = ({ profile, token, fullHeight = true }) => {
   };
 
   const [inEditMode, setInEditMode] = useState(false);
-  const [expandDescription, setExpandDescription] = useState(true);
   const [showErrors, setShowErrors] = useState(false);
 
   const [name, setName] = useState(profile.name);
@@ -58,7 +52,6 @@ export const UserProfileCard = ({ profile, token, fullHeight = true }) => {
   const [surname, setSurname] = useState(profile.surname);
   const [surnameError, setSurnameError] = useState("");
 
-  const [description, setDescription] = useState(profile.description);
   const [photo, setPhoto] = useState(
     profile.photo ? profile.photo : defaultPhoto
   );
@@ -75,7 +68,6 @@ export const UserProfileCard = ({ profile, token, fullHeight = true }) => {
     if (profile) {
       setName(profile.name);
       setSurname(profile.surname);
-      setDescription(profile.description);
       setPhoto(profile.photo ? profile.photo : defaultPhoto);
     }
   }, [profile]);
@@ -153,15 +145,10 @@ export const UserProfileCard = ({ profile, token, fullHeight = true }) => {
     }
     setName(profile.name);
     setSurname(profile.surname);
-    setDescription(profile.description);
     setPhoto(profile.photo ? profile.photo : defaultPhoto);
     setNewPassword("");
     setNewPasswordRepeat("");
     setCurrentPassword("");
-  };
-
-  const openEmail = () => {
-    window.location.href = `mailto:${profile.email}?subject=Email%20Title&body=Dear%20${profile.name}%20${profile.surname},`;
   };
 
   const onSaveChanges = () => {
@@ -180,7 +167,6 @@ export const UserProfileCard = ({ profile, token, fullHeight = true }) => {
     const updateProfileDTO = {
       name,
       surname,
-      description,
       photo,
     };
 
@@ -192,7 +178,7 @@ export const UserProfileCard = ({ profile, token, fullHeight = true }) => {
     console.log(updateProfileDTO);
 
     Axios.patch(
-      `//localhost:3500/users/updateUser/email=${profile.email}`,
+      `//localhost:3500/clients/updateClient/email=${profile.email}`,
       updateProfileDTO,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -265,69 +251,6 @@ export const UserProfileCard = ({ profile, token, fullHeight = true }) => {
             borderRadius: "12px",
           }}
         />
-        {!isEditable && (
-          <Tooltip
-            title={`${
-              profile.rating.reduce((accumulator, rating) => {
-                return accumulator + rating.value;
-              }, 0) / profile.rating.length
-            } (${profile.rating.length} ratings)`}
-            placement="bottom"
-            PopperProps={{
-              modifiers: [
-                {
-                  name: "offset",
-                  options: {
-                    offset: [0, -11],
-                  },
-                },
-              ],
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: "190px",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                margin: "0 auto",
-              }}
-            >
-              {profile.rating && profile.rating.length > 0 && (
-                <Rating
-                  name="read-only"
-                  size="large"
-                  value={
-                    profile.rating.reduce((accumulator, rating) => {
-                      return accumulator + rating.value;
-                    }, 0) / profile.rating.length
-                  }
-                  precision={0.5}
-                  readOnly
-                  emptyIcon={
-                    <StarBorder
-                      fontSize="inherit"
-                      style={{ color: "rgba(0,0,0,0.5)" }}
-                    />
-                  }
-                />
-              )}
-            </div>
-          </Tooltip>
-        )}
-        {!isEditable && (
-          <Button
-            variant="contained"
-            onClick={openEmail}
-            style={{
-              position: "absolute",
-              right: "5px",
-              top: "10px",
-            }}
-          >
-            Message
-          </Button>
-        )}
         <CardMedia
           component="img"
           image={photo ? photo : defaultPhoto}
@@ -339,7 +262,7 @@ export const UserProfileCard = ({ profile, token, fullHeight = true }) => {
             maxWidth: "100px",
             margin: "0 10px",
             borderRadius: "6px",
-            display: `${isEditable ? "inline" : "none"}`,
+            display: `${isEditable && inEditMode ? "inline" : "none"}`,
           }}
         />
         <CardMedia
@@ -353,7 +276,7 @@ export const UserProfileCard = ({ profile, token, fullHeight = true }) => {
             maxWidth: "50px",
             margin: "0 10px",
             borderRadius: "3px",
-            display: `${isEditable ? "inline" : "none"}`,
+            display: `${isEditable && inEditMode ? "inline" : "none"}`,
           }}
         />
       </div>
@@ -509,36 +432,6 @@ export const UserProfileCard = ({ profile, token, fullHeight = true }) => {
             </Alert>
           </ListItem>
         ) : null}
-        <Divider sx={{ display: inEditMode ? "none" : "auto" }} />
-        <ListItem onClick={() => setExpandDescription(!expandDescription)}>
-          {inEditMode ? (
-            <TextField
-              multiline
-              fullWidth
-              minRows={3}
-              maxRows={Infinity}
-              label={"About yourself"}
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          ) : (
-            <Typography
-              sx={{
-                overflow: "hidden",
-                cursor: "pointer",
-                textOverflow: "ellipsis",
-                display: "-webkit-box",
-                WebkitLineClamp: `${expandDescription ? "3" : "Infinity"}`,
-                WebkitBoxOrient: "vertical",
-              }}
-            >
-              About:<br></br>
-              {description}
-            </Typography>
-          )}
-        </ListItem>
-
         {inEditMode && (
           <ListItem>
             <Button
