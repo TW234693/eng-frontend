@@ -84,6 +84,7 @@ export const ClientCard = ({
         display: "flex",
         alignItems: "center",
         flexDirection: "column",
+        padding: "10px 10px 0 10px",
       }}
     >
       <CardMedia
@@ -95,10 +96,12 @@ export const ClientCard = ({
         }
         alt={`${client.name} ${client.surname}`}
         sx={{
-          aspectRatio: 1,
           maxHeight: "200px",
           minHeight: "200px",
+          minWidth: "200px",
+          maxWidth: "200px",
           objectFit: "contain",
+          borderRadius: "12px",
         }}
       />
       <List style={{ width: "80%" }}>

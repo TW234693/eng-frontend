@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Button, CircularProgress, Grid } from "@mui/material";
+import { Button, Card, CircularProgress, Grid } from "@mui/material";
 import Axios from "axios";
 import { ArrowBack } from "@mui/icons-material";
 import { MealCalendar } from "../components/MealCalendar";
@@ -79,12 +79,12 @@ export const MyMealsCalendar = ({ profile, token, checkLoggedInState }) => {
                   isEditable={false}
                 />
               ) : (
-                <h3>
-                  You no meals. Contact your dietitian if you think some meals
-                  should already be present in your diet plan. If you have no
-                  dietitian asssigned, contact one of the dietitians in the
+                <Card style={{ padding: "10px" }}>
+                  You have no meals. Contact your dietitian if you think some
+                  meals should already be present in your diet plan. If you have
+                  no dietitian asssigned, contact one of the dietitians in the
                   community section.
-                </h3>
+                </Card>
               )}
             </Grid>
             <Grid item xs={2}></Grid>

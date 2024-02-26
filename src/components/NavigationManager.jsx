@@ -15,6 +15,7 @@ import { Home } from "../views/Home";
 import { UserIngredientList } from "../views/UserIngredientList";
 import { Community } from "../views/Community";
 import { MyMealsCalendar } from "../views/MyMealsCalendar";
+import { MealTemplates } from "../views/MealTemplates";
 
 export const NavigationManager = () => {
   const navigation = useNavigate();
@@ -119,8 +120,6 @@ export const NavigationManager = () => {
       ></Header>
       <div style={{ padding: "20px" }}>
         <Routes>
-          {/* <Route path="/" element={<Layout />}> */}
-          {/* <Route index element={<Home />} /> */}
           <Route index element={<Navigate to="/register" replace />} />
           <Route
             path="/login"
@@ -222,7 +221,29 @@ export const NavigationManager = () => {
             }
           />
           <Route
+            path="/addMealTemplate"
+            element={
+              <AddOrEditMeal
+                checkLoggedInState={checkLoggedInState}
+                token={loggedInToken}
+              />
+            }
+          />
+          <Route
             path="/clientDetails/:id/editMeal/:mealId"
+            element={
+              <AddOrEditMeal
+                token={loggedInToken}
+                email={
+                  loggedInProfile && loggedInProfile.email
+                    ? loggedInProfile.email
+                    : ""
+                }
+              />
+            }
+          />
+          <Route
+            path="/editMealTemplate/:mealId"
             element={<AddOrEditMeal token={loggedInToken} />}
           />
           <Route
@@ -240,6 +261,20 @@ export const NavigationManager = () => {
             element={
               <MyMealsCalendar
                 profile={loggedInProfile}
+                token={loggedInToken}
+                checkLoggedInState={checkLoggedInState}
+              />
+            }
+          />
+          <Route
+            path="/myMealTemplates"
+            element={
+              <MealTemplates
+                email={
+                  loggedInProfile && loggedInProfile.email
+                    ? loggedInProfile.email
+                    : ""
+                }
                 token={loggedInToken}
                 checkLoggedInState={checkLoggedInState}
               />

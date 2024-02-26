@@ -2,6 +2,7 @@ import {
   Diversity2,
   Kitchen,
   ManageAccounts,
+  MenuBook,
   PeopleAlt,
   Restaurant,
 } from "@mui/icons-material";
@@ -34,6 +35,11 @@ export const Home = ({ checkLoggedInState, isClient, token, profile }) => {
         { label: "Clients", link: "/myClients", icon: <PeopleAlt /> },
         { label: "Ingredients", link: "/myIngredients", icon: <Kitchen /> },
         { label: "Community", link: "/community", icon: <Diversity2 /> },
+        {
+          label: "Template Meals",
+          link: "/myMealTemplates",
+          icon: <MenuBook />,
+        },
       ];
 
   return (

@@ -51,33 +51,77 @@ export const LoggedInHeader = ({ onLogOut, profile, navigation, isClient }) => {
           MenuListProps={{
             "aria-labelledby": "basic-button",
           }}
+          disableScrollLock={true}
         >
-          <MenuItem onClick={() => navigation("/home", { replace: true })}>
+          <MenuItem
+            onClick={() => {
+              navigation("/home", { replace: true });
+              handleClose();
+            }}
+            sx={{ justifyContent: "center" }}
+          >
             Home
           </MenuItem>
           <Divider />
-          <MenuItem onClick={() => navigation("/myProfile", { replace: true })}>
+          <MenuItem
+            onClick={() => {
+              navigation("/myProfile", { replace: true });
+              handleClose();
+            }}
+            sx={{ justifyContent: "center" }}
+          >
             My Profile
           </MenuItem>
-          <MenuItem onClick={() => navigation("/community", { replace: true })}>
+          <MenuItem
+            onClick={() => {
+              navigation("/community", { replace: true });
+              handleClose();
+            }}
+            sx={{ justifyContent: "center" }}
+          >
             Community
           </MenuItem>
           {!isClient && (
             <MenuItem
-              onClick={() => navigation("/myClients", { replace: true })}
+              onClick={() => {
+                navigation("/myClients", { replace: true });
+                handleClose();
+              }}
+              sx={{ justifyContent: "center" }}
             >
               Clients
             </MenuItem>
           )}
           {!isClient && (
             <MenuItem
-              onClick={() => navigation("/myIngredients", { replace: true })}
+              onClick={() => {
+                navigation("/myIngredients", { replace: true });
+                handleClose();
+              }}
+              sx={{ justifyContent: "center" }}
             >
               Ingredients
             </MenuItem>
           )}
+          {!isClient && (
+            <MenuItem
+              onClick={() => {
+                navigation("/myMealTemplates", { replace: true });
+                handleClose();
+              }}
+              sx={{ justifyContent: "center" }}
+            >
+              Template Meals
+            </MenuItem>
+          )}
           {isClient && (
-            <MenuItem onClick={() => navigation("/myMeals", { replace: true })}>
+            <MenuItem
+              onClick={() => {
+                navigation("/myMeals", { replace: true });
+                handleClose();
+              }}
+              sx={{ justifyContent: "center" }}
+            >
               My Meals
             </MenuItem>
           )}

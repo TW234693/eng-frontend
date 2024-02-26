@@ -13,7 +13,7 @@ import { MealCalendarEntry } from "./MealCalendarEntry";
 import { isEqual } from "lodash";
 import Slide from "@mui/material/Slide";
 
-const Transition = forwardRef(function Transition(props, ref) {
+export const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 

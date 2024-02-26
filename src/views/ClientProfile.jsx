@@ -214,7 +214,9 @@ export const ClientProfile = ({ profile, token }) => {
             </Dialog>
           </>
         ) : (
-          <p>{dietitianText}</p>
+          <Card style={{ padding: "10px" }}>
+            <p>{dietitianText}</p>
+          </Card>
         )}
       </Grid>
     </Grid>

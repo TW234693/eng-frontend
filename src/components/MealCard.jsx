@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Card,
   Button,
@@ -10,18 +10,23 @@ import {
   CardMedia,
   Divider,
   Snackbar,
+  Typography,
 } from "@mui/material";
 import { DeleteForever, Edit, Save, Add } from "@mui/icons-material";
 import moment from "moment";
 import Axios from "axios";
 import { NUTRIENTS } from "../utils/Nutrients";
+import { isEqual } from "lodash";
+
+const DEFAULT_MEAL_PHOTO =
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3bdxwcdCX-_0GQAFHcZrOHgyLVlvF1P0BbxlVTiENdYIErIoqH4PQYmPs-fVnxeLP_XA&usqp=CAUs";
 
 const emptyMeal = {
   name: "",
   instructions: "",
   minutesCookingTime: 0,
   mealDate: moment.utc(),
-  photo: "",
+  photo: DEFAULT_MEAL_PHOTO,
 };
 
 export const MealCard = ({
@@ -31,7 +36,14 @@ export const MealCard = ({
   onRemoveIngredient,
   checkLoggedInState,
   initialMealData = emptyMeal,
+  isTemplate = false,
 }) => {
+  const originallyEmpty = useRef(isEqual(initialMealData, emptyMeal));
+  const [expandInstructions, setExpandInstructions] = useState(false);
+  const toggleExpandInstructions = () => {
+    setExpandInstructions(!expandInstructions);
+  };
+
   const [responseMessage, setResponseMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -100,6 +112,28 @@ export const MealCard = ({
   }, [mealDate]);
 
   const [addMealError, setAddMealError] = useState(null);
+
+  useEffect(() => {
+    if (initialMealData.mealDate) {
+      setMealDate(initialMealData.mealDate);
+    }
+    if (initialMealData.minutesCookingTime) {
+      setMealMinutesCookingTime(initialMealData.minutesCookingTime);
+    }
+    if (initialMealData.name) {
+      setMealName(initialMealData.name);
+    }
+    if (initialMealData.instructions) {
+      setMealInstructions(initialMealData.instructions);
+    }
+    if (initialMealData.photo) {
+      setMealPhoto(initialMealData.photo);
+    } else {
+      setMealPhoto(DEFAULT_MEAL_PHOTO);
+    }
+    console.log(initialMealData);
+  }, [initialMealData]);
+
   const handleClose = (reason) => {
     if (reason === "clickaway") {
       return;
@@ -107,6 +141,7 @@ export const MealCard = ({
 
     setOpenSnackbar(false);
   };
+
   const onAddOrEditMeal = () => {
     setShowErrors(true);
 
@@ -147,20 +182,21 @@ export const MealCard = ({
     };
     if (mealPhoto) {
       mealRequestObject.photo = mealPhoto;
+    } else {
+      mealRequestObject.photo = DEFAULT_MEAL_PHOTO;
     }
 
-    if (!clientDetails) {
+    if (!clientDetails && !isTemplate) {
       setAddMealError(
         "An error has occured, please update the values and try again."
       );
       return;
     }
 
-    // const clientEmail = clientDetails.email;
-
     const loggedInUserToken = localStorage.getItem("token");
+    const loggedInUserEmail = localStorage.getItem("email");
 
-    if (!loggedInUserToken) {
+    if (!loggedInUserToken || !loggedInUserEmail) {
       setAddMealError(
         "An error has occured, please try to log out and in again."
       );
@@ -169,9 +205,11 @@ export const MealCard = ({
     }
 
     const requestURL = `//localhost:3500/meals/${
-      initialMealData
+      !originallyEmpty.current
         ? `updateMeal/id=${initialMealData._id}`
-        : `createMeal/clientEmail=${clientDetails.email}`
+        : isTemplate
+          ? `createMealTemplate/userEmail=${loggedInUserEmail}`
+          : `createMeal/clientEmail=${clientDetails.email}`
     }`;
 
     const headers = {
@@ -184,18 +222,16 @@ export const MealCard = ({
       setResponseMessage(responseMessage);
       setOpenSnackbar(true);
       setSuccess(true);
-      // console.log(responseMessage);
     };
 
     const onRequestFail = (error) => {
       const responseMessage = error.response.data.message;
-      // console.log(responseMessage);
       setOpenSnackbar(true);
       setSuccess(false);
       setResponseMessage(responseMessage);
     };
 
-    if (initialMealData) {
+    if (!originallyEmpty.current) {
       Axios.patch(requestURL, mealRequestObject, headers)
         .then(onRequestSuccess)
         .catch(onRequestFail);
@@ -219,11 +255,7 @@ export const MealCard = ({
     >
       <CardMedia
         component="img"
-        image={
-          mealPhoto
-            ? `${mealPhoto}`
-            : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3bdxwcdCX-_0GQAFHcZrOHgyLVlvF1P0BbxlVTiENdYIErIoqH4PQYmPs-fVnxeLP_XA&usqp=CAUs"
-        }
+        image={mealPhoto ? mealPhoto : DEFAULT_MEAL_PHOTO}
         sx={{
           width: "80%",
           aspectRatio: 1,
@@ -251,7 +283,7 @@ export const MealCard = ({
                 fullWidth
                 color="success"
               >
-                {initialMealData
+                {!originallyEmpty.current
                   ? "Finish and save the meal"
                   : "Finish and add the meal"}
               </Button>
@@ -273,7 +305,7 @@ export const MealCard = ({
         ) : null}
 
         {addMealError ? (
-          <ListItem fullWidth>
+          <ListItem>
             <Alert severity="error" style={{ width: "100%" }}>
               {addMealError}
             </Alert>
@@ -290,15 +322,7 @@ export const MealCard = ({
               sx={{ m: "10px" }}
               fullWidth
             />
-          ) : // <ListItemText
-          //   style={{
-          //     whiteSpace: "pre-wrap",
-          //   }}
-          //   primary={`Meal image URL:\n${
-          //     mealPhoto ? mealPhoto : "(Default image)"
-          //   }`}
-          // />
-          null}
+          ) : null}
         </ListItem>
         <Divider />
         <ListItem disablePadding>
@@ -365,7 +389,7 @@ export const MealCard = ({
               <TextField
                 label={"Meal Date"}
                 type="date"
-                value={mealDate}
+                value={moment(mealDate).format("YYYY-MM-DD")}
                 placeholder="Meal name"
                 onChange={(e) => setMealDate(e.target.value)}
                 color={mealDateError && showErrors ? "error" : "primary"}
@@ -413,8 +437,23 @@ export const MealCard = ({
             </>
           ) : (
             <ListItemText
-              style={{ whiteSpace: "pre-wrap" }}
-              primary={`Recipe:\n${mealInstructions}`}
+              style={{ whiteSpace: "pre-wrap", cursor: "pointer" }}
+              onClick={toggleExpandInstructions}
+              primary={
+                <Typography
+                  sx={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    display: "-webkit-box",
+                    WebkitLineClamp: `${
+                      !expandInstructions ? "3" : "Infinity"
+                    }`,
+                    WebkitBoxOrient: "vertical",
+                  }}
+                >
+                  {`Recipe:\n${mealInstructions}`}
+                </Typography>
+              }
             />
           )}
         </ListItem>
@@ -447,8 +486,6 @@ export const MealCard = ({
                   },
                   {}
                 );
-                // console.log("nutrients");
-                // console.log(nutrients);
                 return (
                   <>
                     {Object.entries(nutrients).map(

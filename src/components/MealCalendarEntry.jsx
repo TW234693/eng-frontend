@@ -4,7 +4,13 @@ import Axios from "axios";
 import { MealCard } from "../components/MealCard";
 import { useNavigate } from "react-router-dom";
 
-export const MealCalendarEntry = ({ meal, isEditable, clientDetails }) => {
+export const MealCalendarEntry = ({
+  meal,
+  isEditable,
+  clientDetails,
+  isTemplate = false,
+  onClick = null,
+}) => {
   const navigation = useNavigate();
 
   const onDelete = (e) => {
@@ -35,7 +41,16 @@ export const MealCalendarEntry = ({ meal, isEditable, clientDetails }) => {
       return;
     }
     console.log(meal);
-    navigation(`editMeal/${meal._id}`, { state: { clientDetails, meal } });
+    console.log(isTemplate);
+    navigation(
+      `${isTemplate ? "/" : ""}editMeal${isTemplate ? "Template" : ""}/${
+        meal._id
+      }`,
+      {
+        replace: isTemplate,
+        state: { clientDetails, meal, isTemplate },
+      }
+    );
   };
 
   return (
@@ -43,30 +58,36 @@ export const MealCalendarEntry = ({ meal, isEditable, clientDetails }) => {
       <div
         style={{
           display: isEditable ? "flex" : "none",
-          alignItems: "center",
-          padding: "5px",
+          padding: "5px 0",
           justifyContent: "space-between",
-          fontWeight: "bold",
-          gap: "5%",
-          cursor: "pointer",
         }}
       >
-        <Button onClick={(e) => onDelete(e)} variant="outlined" color="error">
+        <Button onClick={(e) => onDelete(e)} variant="contained" color="error">
           <DeleteForever /> Delete
         </Button>
-        <Button onClick={(e) => onEdit(e)} variant="outlined">
+        <Button onClick={(e) => onEdit(e)} variant="contained">
           <Edit /> Edit
         </Button>
       </div>
-
-      <MealCard
-        ingredients={meal.ingredients}
-        isEditable={false}
-        clientDetails={null}
-        onRemoveIngredient={() => {}}
-        checkLoggedInState={() => {}}
-        initialMealData={meal}
-      />
+      <div
+        onClick={() => {
+          if (onClick) {
+            onClick();
+          }
+        }}
+        style={{
+          cursor: onClick ? "pointer" : "unset",
+        }}
+      >
+        <MealCard
+          ingredients={meal.ingredients}
+          isEditable={false}
+          clientDetails={null}
+          onRemoveIngredient={() => {}}
+          checkLoggedInState={() => {}}
+          initialMealData={meal}
+        />
+      </div>
     </>
   );
 };
