@@ -1,26 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Axios from "axios";
-import {
-  Button,
-  Grid,
-  CircularProgress,
-  Dialog,
-  DialogContent,
-} from "@mui/material";
+import { Button, Grid, CircularProgress } from "@mui/material";
 import { ArrowBack, Add } from "@mui/icons-material";
-// import { IngredientCard } from "../components/IngredientCard";
 import { MealCalendarEntry } from "../components/MealCalendarEntry";
+import { useTranslation } from "react-i18next";
 
 export const MealTemplates = ({ checkLoggedInState, email, token }) => {
+  const { t } = useTranslation();
   const goBack = () => {
     navigation("/home", { replace: true });
   };
 
   const navigation = useNavigate();
   const [userTemplates, setUserTemplates] = useState(null);
-
-  const [dialogOpened, setDialogOpened] = useState(false);
 
   const onAddNewTemplate = () => {
     navigation(`/addMealTemplate`, {
@@ -62,7 +55,7 @@ export const MealTemplates = ({ checkLoggedInState, email, token }) => {
               variant={"contained"}
               startIcon={<ArrowBack />}
             >
-              Go back
+              {t("go_back")}
             </Button>
             <Button
               onClick={onAddNewTemplate}
@@ -70,7 +63,7 @@ export const MealTemplates = ({ checkLoggedInState, email, token }) => {
               startIcon={<Add />}
               color="success"
             >
-              Add new template
+              {t("templates_addnewTemplate")}
             </Button>
           </div>
         </Grid>
@@ -89,22 +82,11 @@ export const MealTemplates = ({ checkLoggedInState, email, token }) => {
           })
         ) : (
           <Grid item xs={12}>
-            <h2>Fetching templates data...</h2>
+            <h2>{t("templates_fetchingData")}</h2>
             <CircularProgress color="success" />
           </Grid>
         )}
       </Grid>
-      <Dialog
-        open={dialogOpened}
-        onClose={() => setDialogOpened(false)}
-        style={{ background: "rgb(0,0,0,0.8)" }}
-        fullWidth
-      >
-        <DialogContent>
-          <h2>Create a new template</h2>
-          {/* <IngredientCard isEditable={true} token={token} /> */}
-        </DialogContent>
-      </Dialog>
     </>
   );
 };

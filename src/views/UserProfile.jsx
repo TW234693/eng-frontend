@@ -2,14 +2,16 @@ import { Button, CircularProgress, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { UserProfileCard } from "../components/UserProfileCard";
 import { ArrowBack } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 export const UserProfile = ({ profile, token }) => {
+  const { t } = useTranslation();
   const navigation = useNavigate();
 
   if (!profile || !token) {
     return (
       <>
-        <h2>Fetching profile data...</h2>
+        <h2>{`${t("profile_fetchingData")}`}</h2>
         <CircularProgress color="success" />
       </>
     );
@@ -25,7 +27,7 @@ export const UserProfile = ({ profile, token }) => {
           variant={"contained"}
           startIcon={<ArrowBack />}
         >
-          Go back
+          {`${t("go_back")}`}
         </Button>
       </Grid>
       <Grid item xs={3}></Grid>

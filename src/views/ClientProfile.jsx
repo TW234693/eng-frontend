@@ -14,8 +14,10 @@ import { ArrowBack, Cancel, DeleteForever, Save } from "@mui/icons-material";
 import Axios from "axios";
 import { useEffect, useState } from "react";
 import { UserProfileCard } from "../components/UserProfileCard";
+import { useTranslation } from "react-i18next";
 
 export const ClientProfile = ({ profile, token }) => {
+  const { t } = useTranslation();
   const navigation = useNavigate();
 
   const [dietitianProfile, setDietitianProfile] = useState(null);
@@ -26,8 +28,8 @@ export const ClientProfile = ({ profile, token }) => {
 
   const dietitianText =
     profile.user && dietitianProfile === null
-      ? "Fetching dietitian data"
-      : "You do not have a dietitian assigned to you. You may find a dietitian through the community tab.";
+      ? t("clientProfile_fetchingDietitianData")
+      : t("clientProfile_noDietitian");
 
   const onDialogConfirm = () => {
     console.log(`token ${token}`);
@@ -96,7 +98,7 @@ export const ClientProfile = ({ profile, token }) => {
   if (!profile || !token) {
     return (
       <>
-        <h2>Fatching profile data...</h2>
+        <h2>{t("clientProfile_fetchingData")}.</h2>
         <CircularProgress color="success" />
       </>
     );
@@ -112,15 +114,15 @@ export const ClientProfile = ({ profile, token }) => {
           variant={"contained"}
           startIcon={<ArrowBack />}
         >
-          Go back
+          {t("go_back")}
         </Button>
       </Grid>
       <Grid item xs={6}>
-        <h2 style={{ margin: 0 }}>You</h2>
+        <h2 style={{ margin: 0 }}>{t("clientProfile_you")}</h2>
         <ClientProfileCard profile={profile} token={token} fullHeight={false} />
       </Grid>
       <Grid item xs={6} marginBlock={false}>
-        <h2 style={{ margin: 0 }}>Your current dietitian</h2>
+        <h2 style={{ margin: 0 }}>{t("clientProfile_yourDietitian")}</h2>
         {dietitianProfile ? (
           <>
             <Card style={{ margin: "10px", padding: "10px" }}>
@@ -138,7 +140,7 @@ export const ClientProfile = ({ profile, token }) => {
                   }}
                 >
                   <h3 style={{ margin: "0 10px 0 0", display: "inline" }}>
-                    Your rating:{" "}
+                    {`${t("clientProfile_yourRating")}: `}
                   </h3>
                   <Rating
                     value={currentRating}
@@ -153,7 +155,7 @@ export const ClientProfile = ({ profile, token }) => {
                     color="success"
                     onClick={onUpdateRating}
                   >
-                    Save
+                    {t("clientProfile_save")}
                   </Button>
 
                   <Button
@@ -161,7 +163,7 @@ export const ClientProfile = ({ profile, token }) => {
                     color="error"
                     onClick={onResetRating}
                   >
-                    Reset
+                    {t("clientProfile_reset")}
                   </Button>
                 </div>
               </div>
@@ -175,7 +177,7 @@ export const ClientProfile = ({ profile, token }) => {
               fullWidth
               style={{ width: "inherit" }}
             >
-              Unassign Yourself
+              {t("clientProfile_unassign")}
             </Button>
             <Dialog
               open={dialogOpened}
@@ -184,8 +186,7 @@ export const ClientProfile = ({ profile, token }) => {
             >
               <DialogContent>
                 <Alert severity="warning">
-                  Are you sure you want to unassign yourself? This operation
-                  cannot be undone.
+                  {t("clientProfile_unassignWarning")}
                 </Alert>
                 <div
                   style={{
@@ -200,14 +201,14 @@ export const ClientProfile = ({ profile, token }) => {
                     color="success"
                     variant="contained"
                   >
-                    Yes, I understand
+                    {t("clientProfile_iUnderstand")}
                   </Button>
                   <Button
                     onClick={() => setDialogOpened(false)}
                     color="error"
                     variant="contained"
                   >
-                    Cancel
+                    {t("clientProfile_cancel")}
                   </Button>
                 </div>
               </DialogContent>

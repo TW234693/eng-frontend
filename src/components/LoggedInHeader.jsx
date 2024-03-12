@@ -1,20 +1,40 @@
-import { Button, Divider, Menu, MenuItem } from "@mui/material";
-import { Menu as MenuIcon } from "@mui/icons-material";
+import {
+  Button,
+  Divider,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+} from "@mui/material";
+import { Language, Menu as MenuIcon } from "@mui/icons-material";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const LoggedInHeader = ({ onLogOut, profile, navigation, isClient }) => {
-  const [menuAnchor, setMenuAnchor] = useState(null);
-  const isOpened = Boolean(menuAnchor);
+  const { t, i18n } = useTranslation();
 
-  const goBack = () => {
+  const [navigationMenuAnchor, setNavigationMenuAnchor] = useState(null);
+  const isNavigationMenuOpened = Boolean(navigationMenuAnchor);
+
+  const [languageMenuAnchor, setLanguageMenuAnchor] = useState(null);
+  const isLanguageMenuOpened = Boolean(languageMenuAnchor);
+
+  const goToProfile = () => {
     navigation("/myProfile", { replace: true });
   };
 
-  const handleMenuButtonClick = (e) => {
-    setMenuAnchor(e.currentTarget);
+  const handleNavMenuButtonClick = (e) => {
+    setNavigationMenuAnchor(e.currentTarget);
   };
-  const handleClose = () => {
-    setMenuAnchor(null);
+  const handleCloseNavMenu = () => {
+    setNavigationMenuAnchor(null);
+  };
+
+  const handleLangMenuButtonClick = (e) => {
+    setLanguageMenuAnchor(e.currentTarget);
+  };
+  const handleCloseLangMenu = () => {
+    setLanguageMenuAnchor(null);
   };
 
   return (
@@ -36,18 +56,19 @@ export const LoggedInHeader = ({ onLogOut, profile, navigation, isClient }) => {
         }}
       >
         <Button
-          onClick={(e) => handleMenuButtonClick(e)}
-          aria-controls={isOpened ? "basic-menu" : undefined}
+          onClick={(e) => handleNavMenuButtonClick(e)}
+          aria-controls={isNavigationMenuOpened ? "basic-menu" : undefined}
           aria-haspopup="true"
-          aria-expanded={isOpened ? "true" : undefined}
+          aria-expanded={isNavigationMenuOpened ? "true" : undefined}
+          style={{ color: "white" }}
         >
           <MenuIcon />
         </Button>
         <Menu
           id="basic-menu"
-          anchorEl={menuAnchor}
-          open={isOpened}
-          onClose={handleClose}
+          anchorEl={navigationMenuAnchor}
+          open={isNavigationMenuOpened}
+          onClose={handleCloseNavMenu}
           MenuListProps={{
             "aria-labelledby": "basic-button",
           }}
@@ -56,78 +77,78 @@ export const LoggedInHeader = ({ onLogOut, profile, navigation, isClient }) => {
           <MenuItem
             onClick={() => {
               navigation("/home", { replace: true });
-              handleClose();
+              handleCloseNavMenu();
             }}
             sx={{ justifyContent: "center" }}
           >
-            Home
+            {`${t("home")}`}
           </MenuItem>
           <Divider />
           <MenuItem
             onClick={() => {
               navigation("/myProfile", { replace: true });
-              handleClose();
+              handleCloseNavMenu();
             }}
             sx={{ justifyContent: "center" }}
           >
-            My Profile
+            {`${t("home_profile")}`}
           </MenuItem>
           <MenuItem
             onClick={() => {
               navigation("/community", { replace: true });
-              handleClose();
+              handleCloseNavMenu();
             }}
             sx={{ justifyContent: "center" }}
           >
-            Community
+            {`${t("home_community")}`}
           </MenuItem>
           {!isClient && (
             <MenuItem
               onClick={() => {
                 navigation("/myClients", { replace: true });
-                handleClose();
+                handleCloseNavMenu();
               }}
               sx={{ justifyContent: "center" }}
             >
-              Clients
+              {`${t("home_clients")}`}
             </MenuItem>
           )}
           {!isClient && (
             <MenuItem
               onClick={() => {
                 navigation("/myIngredients", { replace: true });
-                handleClose();
+                handleCloseNavMenu();
               }}
               sx={{ justifyContent: "center" }}
             >
-              Ingredients
+              {`${t("home_ingredients")}`}
             </MenuItem>
           )}
           {!isClient && (
             <MenuItem
               onClick={() => {
                 navigation("/myMealTemplates", { replace: true });
-                handleClose();
+                handleCloseNavMenu();
               }}
               sx={{ justifyContent: "center" }}
             >
-              Template Meals
+              {`${t("home_templates")}`}
             </MenuItem>
           )}
           {isClient && (
             <MenuItem
               onClick={() => {
                 navigation("/myMeals", { replace: true });
-                handleClose();
+                handleCloseNavMenu();
               }}
               sx={{ justifyContent: "center" }}
             >
-              My Meals
+              {`${t("home_myMeals")}`}
             </MenuItem>
           )}
         </Menu>
         <div
-          onClick={goBack}
+          onClick={goToProfile}
           style={{
             display: "flex",
             alignItems: "center",
@@ -157,8 +178,52 @@ export const LoggedInHeader = ({ onLogOut, profile, navigation, isClient }) => {
         </div>
       </div>
       <div>
+        <Button
+          onClick={(e) => handleLangMenuButtonClick(e)}
+          aria-controls={isLanguageMenuOpened ? "basic-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={isLanguageMenuOpened ? "true" : undefined}
+          style={{ color: "white" }}
+        >
+          <Language />
+        </Button>
+        <Menu
+          id="basic-menu"
+          anchorEl={languageMenuAnchor}
+          open={isLanguageMenuOpened}
+          onClose={handleCloseLangMenu}
+          MenuListProps={{
+            "aria-labelledby": "basic-button",
+          }}
+          disableScrollLock={true}
+        >
+          <MenuItem
+            disabled={i18n.resolvedLanguage === "en"}
+            onClick={() => {
+              i18n.changeLanguage("en");
+              localStorage.setItem("i18n", "en");
+              handleCloseLangMenu();
+            }}
+            sx={{ justifyContent: "center" }}
+          >
+            <ListItemIcon style={{ color: "unset" }}>🇬🇧</ListItemIcon>
+            <ListItemText>English</ListItemText>
+          </MenuItem>
+          <MenuItem
+            disabled={i18n.resolvedLanguage === "pl"}
+            onClick={() => {
+              i18n.changeLanguage("pl");
+              localStorage.setItem("i18n", "pl");
+              handleCloseLangMenu();
+            }}
+            sx={{ justifyContent: "center" }}
+          >
+            <ListItemIcon style={{ color: "unset" }}>🇵🇱</ListItemIcon>
+            <ListItemText>Polski</ListItemText>
+          </MenuItem>
+        </Menu>
         <Button onClick={onLogOut} color={"error"} variant="contained">
-          Log Out
+          {`${t("logout")}`}
         </Button>
       </div>
     </div>

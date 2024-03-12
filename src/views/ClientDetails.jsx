@@ -6,8 +6,10 @@ import Axios from "axios";
 import { ArrowBack, Add } from "@mui/icons-material";
 import { ClientCard } from "../components/ClientCard";
 import { MealCalendar } from "../components/MealCalendar";
+import { useTranslation } from "react-i18next";
 
 export const ClientDetails = ({ checkLoggedInState }) => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [dataFetched, setDataFetched] = useState(false);
   const [clientDetails, setClientDetails] = useState(null);
@@ -42,7 +44,7 @@ export const ClientDetails = ({ checkLoggedInState }) => {
         if (!clients) {
           console.error("No clients found for this user");
           setTimeout(() => {
-            navigation("/myProfile", { replace: true });
+            navigation("/myClients", { replace: true });
           }, 2000);
           return;
         }
@@ -51,7 +53,7 @@ export const ClientDetails = ({ checkLoggedInState }) => {
         if (!lookedForClient) {
           console.error(`Looked for client with ID ${id} was not found`);
           setTimeout(() => {
-            navigation("/myProfile", { replace: true });
+            navigation("/myClients", { replace: true });
           }, 2000);
           return;
         }
@@ -122,7 +124,7 @@ export const ClientDetails = ({ checkLoggedInState }) => {
                   variant={"contained"}
                   startIcon={<ArrowBack />}
                 >
-                  Go back
+                  {`${t("go_back")}`}
                 </Button>
                 <Button
                   onClick={onAddMeal}
@@ -130,7 +132,7 @@ export const ClientDetails = ({ checkLoggedInState }) => {
                   startIcon={<Add />}
                   color="success"
                 >
-                  Add new meal
+                  {`${t("client_addNewMeal")}`}
                 </Button>
               </div>
             </Grid>
@@ -148,17 +150,14 @@ export const ClientDetails = ({ checkLoggedInState }) => {
                   clientDetails={clientDetails}
                 />
               ) : (
-                <h3>
-                  This client has no meals. You can start creating a meal with
-                  the above button.
-                </h3>
+                <h3>{`${t("client_noMeals")}`}</h3>
               )}
             </Grid>
           </Grid>
         </>
       ) : (
         <>
-          <h2>Fetching client data...</h2>
+          <h2>{`${t("client_fetchingData")}`}</h2>
           <CircularProgress color="success" />
         </>
       )}

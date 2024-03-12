@@ -8,10 +8,14 @@ import {
   DialogContent,
 } from "@mui/material";
 import moment from "moment";
+import "moment/dist/locale/en-gb";
+import "moment/dist/locale/pl";
+import "moment/dist/locale/es";
 import { Restaurant } from "@mui/icons-material";
 import { MealCalendarEntry } from "./MealCalendarEntry";
 import { isEqual } from "lodash";
 import Slide from "@mui/material/Slide";
+import { useTranslation } from "react-i18next";
 
 export const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -26,6 +30,7 @@ export const MealCalendar = ({
     return moment(a.mealDate) - moment(b.mealDate);
   });
 
+  const { t, i18n } = useTranslation();
   const [dialogOpened, setDialogOpened] = useState(false);
   const [dialogMeals, setDialogMeals] = useState([]);
   const openDialog = (meals) => {
@@ -78,8 +83,6 @@ export const MealCalendar = ({
     if (!currentMonthDates) {
       onCurrentMonth();
     }
-
-    console.log(currentMonthStartDate);
     let prevMonthStart = moment(currentMonthStartDate)
       .clone()
       .subtract(1, "months");
@@ -133,51 +136,52 @@ export const MealCalendar = ({
   }
 
   return (
-    // <Card style={{ padding: "10px" }}>
     <Grid container>
       <Grid xs={12} item>
         <h3 style={{ margin: "5px 0" }}>
-          {currentMonthStartDate.format("MMMM YYYY")}
+          {currentMonthStartDate
+            .locale(i18n.resolvedLanguage)
+            .format("MMMM YYYY")}
         </h3>
       </Grid>
       <Grid container justifyContent="space-evenly">
         <Grid item xs={4}>
           <Button onClick={onPreviousMonth} variant="contained">
-            Previous month
+            {`${t("calendar_previousMonth")}`}
           </Button>
         </Grid>
         <Grid item xs={4}>
           <Button onClick={onCurrentMonth} variant="contained">
-            Current month
+            {`${t("calendar_currentMonth")}`}
           </Button>
         </Grid>
         <Grid item xs={4}>
           <Button onClick={onNextMonth} variant="contained">
-            Next month
+            {`${t("calendar_nextMonth")}`}
           </Button>
         </Grid>
       </Grid>
       <Grid container>
         <Grid xs={12 / 7} item>
-          <h3>Mon</h3>
+          <h3>{`${t("calendar_monday")}`}</h3>
         </Grid>
         <Grid xs={12 / 7} item>
-          <h3>Tue</h3>
+          <h3>{`${t("calendar_tuesday")}`}</h3>
         </Grid>
         <Grid xs={12 / 7} item>
-          <h3>Wed</h3>
+          <h3>{`${t("calendar_wednesday")}`}</h3>
         </Grid>
         <Grid xs={12 / 7} item>
-          <h3>Thu</h3>
+          <h3>{`${t("calendar_thursday")}`}</h3>
         </Grid>
         <Grid xs={12 / 7} item>
-          <h3>Fri</h3>
+          <h3>{`${t("calendar_friday")}`}</h3>
         </Grid>
         <Grid xs={12 / 7} item>
-          <h3>Sat</h3>
+          <h3>{`${t("calendar_saturday")}`}</h3>
         </Grid>
         <Grid xs={12 / 7} item>
-          <h3>Sun</h3>
+          <h3>{`${t("calendar_sunday")}`}</h3>
         </Grid>
       </Grid>
       <Grid container>
@@ -207,7 +211,9 @@ export const MealCalendar = ({
                   style={{ height: "100%" }}
                   onClick={() => openDialog(mealsThisDay)}
                 >
-                  <h3>{`${dayOfMonth.format("DD.MM")}`}</h3>
+                  <h3>{`${dayOfMonth.format(
+                    i18n.resolvedLanguage === "pl" ? "DD.MM" : "DD/MM"
+                  )}`}</h3>
                   {!mealsThisDay.length ? null : (
                     <Restaurant style={{ marginBottom: "5px" }} />
                   )}
@@ -247,6 +253,5 @@ export const MealCalendar = ({
         })}
       </Grid>
     </Grid>
-    // </Card>
   );
 };

@@ -3,6 +3,7 @@ import { Edit, DeleteForever } from "@mui/icons-material";
 import Axios from "axios";
 import { MealCard } from "../components/MealCard";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export const MealCalendarEntry = ({
   meal,
@@ -11,6 +12,7 @@ export const MealCalendarEntry = ({
   isTemplate = false,
   onClick = null,
 }) => {
+  const { t } = useTranslation();
   const navigation = useNavigate();
 
   const onDelete = (e) => {
@@ -63,10 +65,10 @@ export const MealCalendarEntry = ({
         }}
       >
         <Button onClick={(e) => onDelete(e)} variant="contained" color="error">
-          <DeleteForever /> Delete
+          <DeleteForever /> {`${t("delete")}`}
         </Button>
         <Button onClick={(e) => onEdit(e)} variant="contained">
-          <Edit /> Edit
+          <Edit /> {`${t("edit")}`}
         </Button>
       </div>
       <div

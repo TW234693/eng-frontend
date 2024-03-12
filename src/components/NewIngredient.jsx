@@ -20,6 +20,7 @@ import { useState } from "react";
 import { Search } from "@mui/icons-material";
 import Axios from "axios";
 import { NUTRIENTS } from "../utils/Nutrients";
+import { useTranslation } from "react-i18next";
 
 const GRAM_UNIT_URL =
   "http://www.edamam.com/ontologies/edamam.owl#Measure_gram";
@@ -37,6 +38,8 @@ const BASIC_NUTRIENTS_CODES = [
 ];
 
 export const NewIngredient = ({ onAddIngredient, token }) => {
+  const { i18n, t } = useTranslation();
+
   const [nextFromEdamam, setNextFromEdamam] = useState(true);
   const [lastFromEdamam, setLastFromEdamam] = useState(true);
 
@@ -60,7 +63,6 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
         const nutrientEntry = chosenIngredientData.totalNutrients[key];
         return {
           code: key,
-          label: nutrientEntry.label,
           quantity: nutrientEntry.quantity,
           unit: nutrientEntry.unit,
         };
@@ -72,14 +74,14 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
     } else {
       const { name, nutrients, photo } = chosenIngredient;
 
-      const nutruentsNoIds = nutrients.map((nutrient) => {
-        const { _id, ...rest } = nutrient;
+      const nutruentsNoIdsNoLabel = nutrients.map((nutrient) => {
+        const { _id, label, ...rest } = nutrient;
         return rest;
       });
 
       const ingredientToAdd = {
         name,
-        nutrients: nutruentsNoIds,
+        nutrients: nutruentsNoIdsNoLabel,
         photo,
         quantityGrams: chosenIngredientAmount,
       };
@@ -115,8 +117,10 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
           setSearchWasMade(true);
           setLastFromEdamam(true);
         })
-        .catch((e) => {
-          // console.log(e);
+        .catch(() => {
+          setSearchResults(null);
+
+          setSearchWasMade(true);
         });
     } else {
       Axios.get(`//localhost:3500/ingredients/search/q=${searchQuery}`, {
@@ -128,9 +132,9 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
           setSearchWasMade(true);
           setLastFromEdamam(false);
         })
-        .catch((e) => {
-          // console.log(e);
-          // console.log(token);
+        .catch(() => {
+          setSearchResults(null);
+          setSearchWasMade(true);
         });
     }
   };
@@ -164,7 +168,7 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
           console.log(res.data);
         })
         .catch((e) => {
-          // console.log(e);
+          console.log(e);
         });
     } else {
       console.log(ingredient);
@@ -180,13 +184,13 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
           <ListItem>
             <FormControl>
               <FormLabel style={{ color: "black" }}>
-                <h3>Ingredient data from:</h3>
+                <h3>{`${t("newIngredient_ingredientSource")}`}</h3>
               </FormLabel>
               <RadioGroup name="radio-buttons-group">
                 <FormControlLabel
                   value={true}
                   control={<Radio />}
-                  label="Edamam's Food & Grocery API"
+                  label={`${t("newIngredient_EdamamAPI")}`}
                   onChange={() => {
                     setNextFromEdamam(true);
                   }}
@@ -195,7 +199,7 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
                 <FormControlLabel
                   value={false}
                   control={<Radio />}
-                  label="My custom ingredients"
+                  label={`${t("newIngredient_customIngredients")}`}
                   onChange={() => {
                     setNextFromEdamam(false);
                   }}
@@ -209,7 +213,11 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
             <TextField
               type="text"
               value={searchQuery}
-              placeholder="Ingredient name"
+              placeholder={`${
+                nextFromEdamam
+                  ? t("newIngredient_ingredientNameSearchEdamam")
+                  : t("newIngredient_ingredientNameSearch")
+              }`}
               onChange={(e) => setSearchQuery(e.target.value)}
               sx={{ m: "10px" }}
               fullWidth
@@ -225,9 +233,16 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
           </ListItem>
           <ListItem style={{ maxHeight: "70vh", overflowY: "auto" }}>
             {searchResults === null || searchResults.length === 0 ? (
-              <h3 style={{ color: "rgb(220,0,0)" }}>
-                {searchWasMade ? "No matching ingredients found" : null}
-              </h3>
+              <Card
+                style={{
+                  padding: "5px",
+                  display: searchWasMade ? "unset" : "none",
+                }}
+              >
+                <h3 style={{ color: "rgb(220,0,0)" }}>
+                  {`${t("newIngredient_noMatch")}`}
+                </h3>
+              </Card>
             ) : (
               <Grid
                 container
@@ -281,12 +296,14 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
                                       sx={{
                                         display: "flex",
                                         justifyContent: "space-between",
+                                        gap: "5px",
                                       }}
                                     >
                                       <span>
                                         {NUTRIENTS.find(
                                           (n) => n.code === nutrientCode
-                                        ).label ?? nutrientCode}
+                                        ).label[i18n.resolvedLanguage] ??
+                                          nutrientCode}
                                       </span>
                                       <span>{nutrientAmount}</span>
                                     </ListItem>
@@ -345,7 +362,7 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
                   color="success"
                   variant="contained"
                 >
-                  Add
+                  {`${t("newIngredient_add")}`}
                 </Button>
               </ListItem>
               {(lastFromEdamam
@@ -364,7 +381,14 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
                         justifyContent: "space-between",
                       }}
                     >
-                      <span>{nutrientEntry.label}:</span>
+                      <span>
+                        {lastFromEdamam
+                          ? nutrientEntry.label
+                          : NUTRIENTS.find((n) => n.code === nutrientEntry.code)
+                              .label[i18n.resolvedLanguage] ??
+                            nutrientEntry.code}
+                        :
+                      </span>
                       <span>
                         {(chosenIngredientAmount * nutrientEntry.quantity)
                           .toFixed(3)

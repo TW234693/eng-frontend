@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import Axios from "axios";
-import { TextField, FormControl, Button, Alert } from "@mui/material";
+import { TextField, FormControl, Button, Alert, Card } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 const EMAIL_REGEX =
   /^(?:(?:[^<>()[\]\\.,;:\s@"]+(?:\.[^<>()[\]\\.,;:\s@"]+)*)|.(?:".+"))@(?:(?:\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(?:(?:[a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export const AssignNewClient = ({ navigation, checkLoggedInState }) => {
+  const { t } = useTranslation();
+
   const userEmail = localStorage.getItem("email");
   const token = localStorage.getItem("token");
 
@@ -18,22 +21,18 @@ export const AssignNewClient = ({ navigation, checkLoggedInState }) => {
 
   useEffect(() => {
     if (!clientEmail) {
-      setEmailError("Please provide an email.");
+      setEmailError(t("email_error_noEmail"));
       return;
     }
     if (!EMAIL_REGEX.test(clientEmail)) {
-      setEmailError("Please provide a valid email address.");
+      setEmailError(t("email_error_invalid"));
       return;
     }
     setEmailError("");
-  }, [clientEmail]);
+  }, [clientEmail, t]);
 
   const handleAssign = (event) => {
     event.preventDefault();
-
-    // if (emailError) {
-    //   return;
-    // }
 
     if (!userEmail || !token) {
       checkLoggedInState();
@@ -44,21 +43,19 @@ export const AssignNewClient = ({ navigation, checkLoggedInState }) => {
       clientEmail: clientEmail,
     };
 
-    // console.log(assignClientRequestObject);
-
     Axios.patch("//localhost:3500/users/assign", assignClientRequestObject, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
         const responseMessage = res.data.message;
         setAssignmentCompleted(true);
-        setAssigningResponse(responseMessage);
+        setAssigningResponse(t(responseMessage));
         navigation("/myClients", { replace: true });
       })
       .catch((error) => {
         const responseMessage = error.response.data.message;
         setAssignmentCompleted(false);
-        setAssigningResponse(responseMessage);
+        setAssigningResponse(t(responseMessage));
       });
   };
 
@@ -90,30 +87,24 @@ export const AssignNewClient = ({ navigation, checkLoggedInState }) => {
           variant={"contained"}
           startIcon={<ArrowBack />}
         >
-          Go back
+          {`${t("go_back")}`}
         </Button>
       </div>
-      <FormControl
+      <Card
         style={{
           minWidth: "30%",
           maxWidth: "30%",
+          margin: "10px",
+          padding: "10px",
           marginBottom: "10px",
         }}
       >
-        <h2>Please, enter the email of the client you would like to add</h2>
+        <h2>{`${t("clients_assignHeading")}`}</h2>
         <FormControl>
-          {!emailError && showErrors && assigningResponse ? (
-            <Alert
-              severity={assignmentCompleted ? "success" : "error"}
-              variant="filled"
-            >
-              {assigningResponse}
-            </Alert>
-          ) : null}
           <TextField
-            label={"Client's Email"}
+            label={t("email")}
             type="email"
-            placeholder="clientemail@address.com"
+            placeholder={t("email")}
             value={clientEmail}
             onChange={(e) => setClientEmail(e.target.value)}
             color={emailError && showErrors ? "error" : "primary"}
@@ -124,17 +115,26 @@ export const AssignNewClient = ({ navigation, checkLoggedInState }) => {
               {emailError}
             </Alert>
           ) : null}
+          {!emailError && showErrors && assigningResponse ? (
+            <Alert
+              severity={assignmentCompleted ? "success" : "error"}
+              variant="filled"
+            >
+              {assigningResponse}
+            </Alert>
+          ) : null}
         </FormControl>
-      </FormControl>
-      <Button
-        variant="contained"
-        onClick={(e) => {
-          handleAssign(e);
-          setShowErrors(true);
-        }}
-      >
-        Assign
-      </Button>
+        <h3> </h3>
+        <Button
+          variant="contained"
+          onClick={(e) => {
+            handleAssign(e);
+            setShowErrors(true);
+          }}
+        >
+          {`${t("clients_assign")}`}
+        </Button>
+      </Card>
     </div>
   );
 };

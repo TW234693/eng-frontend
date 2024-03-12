@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NUTRIENTS } from "../utils/Nutrients";
+import { NUTRIENTS, NUTRIENTS_NO_LABELS } from "../utils/Nutrients";
 import {
   Button,
   Card,
@@ -15,12 +15,21 @@ import {
 import { Clear, DeleteForever, Edit, EditOff, Save } from "@mui/icons-material";
 import { isEmpty, isObject } from "lodash";
 import Axios from "axios";
+import { useTranslation } from "react-i18next";
 
-export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
+export const IngredientCard = ({
+  ingredient = {},
+  isEditable,
+  token,
+  isOpened = false,
+}) => {
+  const { i18n, t } = useTranslation();
+
   const defaultPhoto =
     "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg";
-  const [inEditMode, setInEditMode] = useState(false);
-  const [showNutrients, setShowNutrients] = useState(false);
+
+  const [inEditMode, setInEditMode] = useState(isOpened);
+  const [showNutrients, setShowNutrients] = useState(isOpened);
   const [showErrors, setShowErrors] = useState(false);
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -35,7 +44,9 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
   const [photo, setPhoto] = useState(ingredient.photo ?? defaultPhoto);
   const [name, setName] = useState(ingredient.name ?? "");
   const [nameError, setNameError] = useState("");
-  const [nutrients, setNutrients] = useState(ingredient.nutrients ?? NUTRIENTS);
+  const [nutrients, setNutrients] = useState(
+    ingredient.nutrients ?? NUTRIENTS_NO_LABELS
+  );
 
   const [responseMsg, setResponseMsg] = useState("");
   const [success, setSuccess] = useState(false);
@@ -58,7 +69,7 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
     const handleSuccess = (res) => {
       const responseMessage = res.data.message;
       setShowErrors(false);
-      setResponseMsg(responseMessage);
+      setResponseMsg(t(responseMessage));
       setOpenSnackbar(true);
       setSuccess(true);
       window.location.reload();
@@ -69,7 +80,7 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
       console.log(responseMessage);
       setOpenSnackbar(true);
       setSuccess(false);
-      setResponseMsg(responseMessage);
+      setResponseMsg(t(responseMessage));
     };
 
     Axios.delete(requestURL, auth)
@@ -82,7 +93,7 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
   };
 
   const resetData = () => {
-    setNutrients(ingredient.nutrients ?? NUTRIENTS);
+    setNutrients(ingredient.nutrients ?? NUTRIENTS_NO_LABELS);
     setName(ingredient.name ?? "");
     setPhoto(ingredient.photo ?? defaultPhoto);
     setShowErrors(false);
@@ -98,7 +109,7 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
     const isExistingIngredient =
       !isEmpty(ingredient) && isObject(ingredient) && ingredient._id;
 
-    const ingredientTDO = {
+    const ingredientDTO = {
       name,
       nutrients,
       photo,
@@ -117,7 +128,7 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
     const handleSuccess = (res) => {
       const responseMessage = res.data.message;
       setShowErrors(false);
-      setResponseMsg(responseMessage);
+      setResponseMsg(t(responseMessage));
       setOpenSnackbar(true);
       setSuccess(true);
     };
@@ -127,11 +138,11 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
       console.log(responseMessage);
       setOpenSnackbar(true);
       setSuccess(false);
-      setResponseMsg(responseMessage);
+      setResponseMsg(t(responseMessage));
     };
 
     if (isExistingIngredient) {
-      Axios.patch(requestURL, ingredientTDO, auth)
+      Axios.patch(requestURL, ingredientDTO, auth)
         .then((res) => {
           handleSuccess(res);
         })
@@ -139,7 +150,7 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
           handleFailure(error);
         });
     } else {
-      Axios.post(requestURL, ingredientTDO, auth)
+      Axios.post(requestURL, ingredientDTO, auth)
         .then((res) => {
           handleSuccess(res);
           window.location.reload();
@@ -162,16 +173,23 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
     setNutrients(updatedNutrients);
   };
 
+  let cardStyle = {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    padding: "10px",
+  };
+
+  if (isOpened) {
+    cardStyle = {
+      ...cardStyle,
+      border: "none",
+      boxShadow: "none",
+    };
+  }
+
   return (
-    <Card
-      raised
-      style={{
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "column",
-        padding: "10px",
-      }}
-    >
+    <Card raised style={cardStyle}>
       <Snackbar open={openSnackbar && isEditable} onClose={handleClose}>
         <Alert
           onClose={handleClose}
@@ -232,7 +250,7 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
               fullWidth
               color="info"
             >
-              {inEditMode ? "Stop Editing" : "Start editing"}
+              {inEditMode ? t("form_stopEditing") : t("form_startEditing")}
             </Button>
           </ListItem>
         )}
@@ -246,7 +264,9 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
                 variant="contained"
                 color="success"
               >
-                Save Changes
+                {isOpened
+                  ? t("ingredientCard_createIngredient")
+                  : t("form_saveChanges")}
               </Button>
             </ListItem>
             <ListItem disablePadding>
@@ -256,38 +276,25 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
                 fullWidth
                 color="error"
               >
-                Reset changes
+                {`${t("form_resetChanges")}`}
               </Button>
             </ListItem>
           </>
         )}
         <ListItem>
-          {
-            inEditMode ? (
-              <TextField
-                label={"Ingredient picture URL"}
-                type="url"
-                value={photo}
-                placeholder="(Default image)"
-                onChange={(e) => setPhoto(e.target.value)}
-                onBlur={(e) =>
-                  setPhoto(e.target.value ? e.target.value : defaultPhoto)
-                }
-                fullWidth
-              />
-            ) : null
-            // (
-            //   <ListItemText
-            //     style={{
-            //       whiteSpace: "pre-wrap",
-            //       display: `${isEditable ? "auto" : "none"}`,
-            //     }}
-            //     primary={`Ingredient picture :\n${
-            //       photo !== defaultPhoto ? photo : "(Default image)"
-            //     }`}
-            //   />
-            // )
-          }
+          {inEditMode ? (
+            <TextField
+              label={"Ingredient picture URL"}
+              type="url"
+              value={photo}
+              placeholder="(Default image)"
+              onChange={(e) => setPhoto(e.target.value)}
+              onBlur={(e) =>
+                setPhoto(e.target.value ? e.target.value : defaultPhoto)
+              }
+              fullWidth
+            />
+          ) : null}
         </ListItem>
         <ListItem>
           {!inEditMode ? (
@@ -299,13 +306,12 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
                 margin: "4px 0",
               }}
             >
-              <span>Ingredient name:</span>
+              <span>{`${t("ingredientCard_IngredientName")}`}:</span>
               <span>{name}</span>
             </div>
           ) : (
-            // <ListItemText primary={`First name: ${name}`} />
             <TextField
-              label={"Ingredient name"}
+              label={`${t("ingredientCard_IngredientName")}`}
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -323,14 +329,16 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
         ) : null}
         <ListItem>
           <Button onClick={() => setShowNutrients(!showNutrients)} fullWidth>
-            {showNutrients ? "Hide nutrients" : "Show nutrients"}
+            {showNutrients
+              ? t("ingredientCard_hideNutrients")
+              : t("ingredientCard_showNutrients")}
           </Button>
         </ListItem>
         <Divider
           textAlign="center"
           sx={{ display: showNutrients ? "auto" : "none" }}
         >
-          <b>Nutritional values per gram</b>
+          <b>{`${t("ingredientCard_nutritionPergram")}`}</b>
         </Divider>
         {showNutrients
           ? inEditMode
@@ -343,7 +351,11 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
                   }}
                 >
                   <TextField
-                    label={nutrient.label}
+                    label={
+                      NUTRIENTS.find((n) => n.code === nutrient.code).label[
+                        i18n.resolvedLanguage
+                      ] ?? nutrient.code
+                    }
                     type="number"
                     value={nutrient.quantity}
                     onChange={(e) =>
@@ -372,7 +384,11 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
                     justifyContent: "space-between",
                   }}
                 >
-                  <span>{nutrient.label}</span>
+                  <span>
+                    {NUTRIENTS.find((n) => n.code === nutrient.code).label[
+                      i18n.resolvedLanguage
+                    ] ?? nutrient.code}
+                  </span>
                   <span>
                     {nutrient.quantity}
                     {nutrient.unit}
@@ -380,7 +396,7 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
                 </ListItem>
               ))
           : null}
-        {isEditable && (
+        {isEditable && !isEmpty(ingredient) && (
           <ListItem>
             <Button
               onClick={deleteIngredient}
@@ -389,7 +405,7 @@ export const IngredientCard = ({ ingredient = {}, isEditable, token }) => {
               variant="contained"
               startIcon={<DeleteForever />}
             >
-              Delete ingredient
+              {`${t("ingredientCard_deleteIngredient")}`}
             </Button>
           </ListItem>
         )}

@@ -4,8 +4,11 @@ import { Button, Card, CircularProgress, Grid } from "@mui/material";
 import Axios from "axios";
 import { ArrowBack } from "@mui/icons-material";
 import { MealCalendar } from "../components/MealCalendar";
+import { useTranslation } from "react-i18next";
 
 export const MyMealsCalendar = ({ profile, token, checkLoggedInState }) => {
+  const { t } = useTranslation();
+
   const [dataFetched, setDataFetched] = useState(false);
   const [clientMeals, setClientMeals] = useState(null);
   const [hasMeals, setHasMeals] = useState(null);
@@ -66,7 +69,7 @@ export const MyMealsCalendar = ({ profile, token, checkLoggedInState }) => {
                   variant={"contained"}
                   startIcon={<ArrowBack />}
                 >
-                  Go back
+                  {t("go_back")}
                 </Button>
               </div>
             </Grid>
@@ -80,10 +83,7 @@ export const MyMealsCalendar = ({ profile, token, checkLoggedInState }) => {
                 />
               ) : (
                 <Card style={{ padding: "10px" }}>
-                  You have no meals. Contact your dietitian if you think some
-                  meals should already be present in your diet plan. If you have
-                  no dietitian asssigned, contact one of the dietitians in the
-                  community section.
+                  {t("calendar_noMealsClient")}
                 </Card>
               )}
             </Grid>
@@ -92,7 +92,7 @@ export const MyMealsCalendar = ({ profile, token, checkLoggedInState }) => {
         </>
       ) : (
         <>
-          <h2>Fetching meal data...</h2>
+          <h2>{t("client_datchingMealData")}</h2>
           <CircularProgress color="success" />
         </>
       )}

@@ -10,9 +10,8 @@ import {
   Button,
   Alert,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
-// const EMAIL_REGEX2 =
-//   /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
 const EMAIL_REGEX =
   /^(?:(?:[^<>()[\]\\.,;:\s@"]+(?:\.[^<>()[\]\\.,;:\s@"]+)*)|.(?:".+"))@(?:(?:\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(?:(?:[a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const PASSWORD_LOWERCASE_REGEX = /^(?=.*[a-z]).*$/;
@@ -22,6 +21,8 @@ const PASSWORD_SPECIAL_REGEX = /^(?=.*[!@#$%^&*]).*$/;
 const PASSWORD_LENGTH_REGEX = /^.{8,32}$/;
 
 export const Register = ({ navigation, isLoggedIn }) => {
+  const { t } = useTranslation();
+
   const [showErrors, setShowErrors] = useState(false);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -40,57 +41,55 @@ export const Register = ({ navigation, isLoggedIn }) => {
 
   useEffect(() => {
     if (!PASSWORD_LENGTH_REGEX.test(password)) {
-      setPasswordError(
-        "The password must be between 8 and 32 characters long."
-      );
+      setPasswordError(t("password_error_length"));
       return;
     }
     if (!PASSWORD_LOWERCASE_REGEX.test(password)) {
-      setPasswordError(
-        "The password must contain at least one lower-case letter."
-      );
+      setPasswordError(t("password_error_noLowercase"));
       return;
     }
     if (!PASSWORD_UPPERCASE_REGEX.test(password)) {
-      setPasswordError(
-        "The password must contain at least one upper case letter."
-      );
+      setPasswordError(t("password_error_noUppercase"));
       return;
     }
     if (!PASSWORD_NUMBER_REGEX.test(password)) {
-      setPasswordError("The password must contain at least one number.");
+      setPasswordError(t("password_error_noDigit"));
       return;
     }
     if (!PASSWORD_SPECIAL_REGEX.test(password)) {
-      setPasswordError(
-        "The password must contain at least one of the following characters: ! @ # $ % ^ & *"
-      );
+      setPasswordError(t("password_error_noSpecial"));
       return;
     }
     if (password !== passwordRepeat) {
-      setPasswordError("Provided passwords do not match.");
+      setPasswordError(t("password_error_repeatMismatch"));
       return;
     }
     setPasswordError("");
-  }, [password, passwordRepeat]);
+  }, [password, passwordRepeat, t]);
 
   useEffect(() => {
     if (!email) {
-      setEmailError("Please provide an email.");
+      setEmailError(t("email_error_noEmail"));
       return;
     }
     if (!EMAIL_REGEX.test(email)) {
-      setEmailError("Please provide a valid email address.");
+      setEmailError(t("email_error_invalid"));
       return;
     }
     setEmailError("");
-  }, [email]);
+  }, [email, t]);
 
   useEffect(() => {
     if (isLoggedIn) {
       navigation("/home", { replace: true });
     }
   });
+
+  useEffect(() => {
+    if (registerError) {
+      setRegisterError(t("auth_register_invalid"));
+    }
+  }, [t, registerError]);
 
   const handleRegister = (event) => {
     event.preventDefault();
@@ -99,11 +98,11 @@ export const Register = ({ navigation, isLoggedIn }) => {
       return;
     }
     if (!name) {
-      setRegisterError("Name must be provided.");
+      setRegisterError(t("firstName_error_missing"));
       return;
     }
     if (!surname) {
-      setRegisterError("Surname must be provided.");
+      setRegisterError(t("familyName_error_missing"));
       return;
     }
 
@@ -118,9 +117,6 @@ export const Register = ({ navigation, isLoggedIn }) => {
       registerRequestObject.description = description;
     }
 
-    // console.log(registerRequestObject);
-    // return;
-
     Axios.post("//localhost:3500/register", registerRequestObject)
       .then((res) => {
         const responseMessage = res.data.message;
@@ -130,7 +126,7 @@ export const Register = ({ navigation, isLoggedIn }) => {
         }, 2000);
       })
       .catch(() => {
-        setRegisterError("Invalid credentials");
+        setRegisterError(t("auth_register_invalid"));
       });
   };
 
@@ -148,16 +144,16 @@ export const Register = ({ navigation, isLoggedIn }) => {
           maxWidth: "30%",
         }}
       >
-        <h2>Welcome, please register</h2>
+        <h2>{`${t("register_welcome")}`}</h2>
         <FormControl>
-          <FormLabel style={{ color: "black" }}>
-            Why do you want to use the app?
-          </FormLabel>
+          <FormLabel style={{ color: "black" }}>{`${t(
+            "register_form_reasonQuestion"
+          )}`}</FormLabel>
           <RadioGroup name="radio-buttons-group">
             <FormControlLabel
               value="user"
               control={<Radio />}
-              label="I want to create diet plans for others"
+              label={`${t("register_form_reasonDietitian")}`}
               onChange={(e) => {
                 setIsClient(e.target.value === "client");
               }}
@@ -166,7 +162,7 @@ export const Register = ({ navigation, isLoggedIn }) => {
             <FormControlLabel
               value="client"
               control={<Radio />}
-              label="I need help with creating my diet plan"
+              label={`${t("register_form_reasonClient")}`}
               onChange={(e) => {
                 setIsClient(e.target.value === "client");
               }}
@@ -176,12 +172,11 @@ export const Register = ({ navigation, isLoggedIn }) => {
         </FormControl>
         <FormControl>
           <TextField
-            label={"Email"}
+            label={`${t("email")}`}
             type="email"
-            placeholder="youremail@address.com"
+            placeholder={`${t("email")}`}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            // helperText={emailError && showErrors ? emailError : null}
             color={emailError && showErrors ? "error" : "primary"}
             sx={{ m: "10px" }}
           />
@@ -193,7 +188,7 @@ export const Register = ({ navigation, isLoggedIn }) => {
         </FormControl>
         <FormControl>
           <TextField
-            label={"Password"}
+            label={`${t("password")}`}
             type="password"
             placeholder="************"
             value={password}
@@ -202,7 +197,7 @@ export const Register = ({ navigation, isLoggedIn }) => {
             sx={{ m: "10px" }}
           />
           <TextField
-            label={"Repeat password"}
+            label={`${t("password_repeat")}`}
             type="password"
             placeholder="************"
             value={passwordRepeat}
@@ -218,9 +213,9 @@ export const Register = ({ navigation, isLoggedIn }) => {
         </FormControl>
         <FormControl>
           <TextField
-            label={"Name"}
+            label={`${t("first_name")}`}
             type="text"
-            placeholder="Your name"
+            placeholder={`${t("first_name")}`}
             value={name}
             onChange={(e) => setName(e.target.value)}
             sx={{ m: "10px" }}
@@ -228,9 +223,9 @@ export const Register = ({ navigation, isLoggedIn }) => {
         </FormControl>
         <FormControl>
           <TextField
-            label={"Surname"}
+            label={`${t("family_name")}`}
             type="text"
-            placeholder="Your surname"
+            placeholder={`${t("family_name")}`}
             value={surname}
             onChange={(e) => setSurname(e.target.value)}
             sx={{ m: "10px" }}
@@ -238,15 +233,15 @@ export const Register = ({ navigation, isLoggedIn }) => {
         </FormControl>
         {!isClient ? (
           <FormControl>
-            <FormLabel style={{ color: "black" }}>
-              Tell your clients something about yourself:
-            </FormLabel>
+            <FormLabel style={{ color: "black" }}>{`${t(
+              "register_form_tellAboutYou"
+            )}`}</FormLabel>
             <TextField
               multiline
               minRows={3}
-              label={"Description"}
+              label={`${t("about_person")}`}
               type="text"
-              placeholder="Description ..."
+              placeholder={`${t("about_person")}...`}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               sx={{ m: "10px" }}
@@ -261,14 +256,15 @@ export const Register = ({ navigation, isLoggedIn }) => {
           setShowErrors(true);
         }}
       >
-        Register
+        {`${t("register")}`}
       </Button>
 
       <p style={{ display: registerError ? "block" : "none" }}>
         {registerError}
       </p>
       <p>
-        Dont have account yet? <a href="../login">Log in here!</a>
+        {`${t("register_accountAlready")} `}
+        <a href="../login">{`${t("register_loginHere")}`}</a>
       </p>
     </div>
   );

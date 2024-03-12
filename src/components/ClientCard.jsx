@@ -19,13 +19,18 @@ import {
   Edit,
   EditOff,
   Save,
+  Email,
 } from "@mui/icons-material";
+
+import { useTranslation } from "react-i18next";
 
 export const ClientCard = ({
   client,
   navigation,
   showDetailsButton = true,
 }) => {
+  const { t } = useTranslation();
+
   const [showNotes, setShowNotes] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentNotes, setCurrentNotes] = useState(client.notes ?? "");
@@ -122,7 +127,7 @@ export const ClientCard = ({
         <ListItem disablePadding>
           <Button onClick={changeHideNotes} fullWidth>
             <Description />
-            {showNotes ? "Hide Notes" : "Show Notes"}
+            {showNotes ? t("clients_hideNotes") : t("clients_showNotes")}
           </Button>
         </ListItem>
         {showNotes ? (
@@ -130,14 +135,14 @@ export const ClientCard = ({
             <ListItem disablePadding>
               <Button onClick={changeEditMode} fullWidth>
                 {editMode ? <EditOff /> : <Edit />}
-                {editMode ? "Cancel editing" : "Start editing"}
+                {editMode ? t("form_resetChanges") : t("form_startEditing")}
               </Button>
             </ListItem>
             {editMode ? (
               <ListItem>
                 <Button fullWidth onClick={saveNotesChanges}>
                   <Save />
-                  Save changes
+                  {`${t("form_saveChanges")}`}
                 </Button>
               </ListItem>
             ) : null}
@@ -148,7 +153,7 @@ export const ClientCard = ({
                   fullWidth
                   minRows={3}
                   maxRows={Infinity}
-                  label={"Client notes"}
+                  label={t("clients_notes")}
                   type="text"
                   value={currentNotes}
                   onChange={(e) => setCurrentNotes(e.target.value)}
@@ -174,13 +179,13 @@ export const ClientCard = ({
         {showDetailsButton ? (
           <Grid xs={6}>
             <Button variant="contained" onClick={openDetails}>
-              Diet Plan
+              {`${t("clients_dietPlan")}`}
             </Button>
           </Grid>
         ) : null}
         <Grid xs={showDetailsButton ? 6 : 12}>
           <Button variant="contained" onClick={openEmail}>
-            Message
+            <Email />
           </Button>
         </Grid>
       </Grid>

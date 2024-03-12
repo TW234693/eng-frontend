@@ -4,11 +4,9 @@ import { Route, Navigate, useNavigate, Routes } from "react-router-dom";
 import { Login } from "../views/Login";
 import { AssignNewClient } from "../views/AssignNewClient";
 import { Register } from "../views/Register";
-import { NotLoggedIn } from "../views/NotLoggedIn";
 import { ClientDetails } from "../views/ClientDetails";
 import React, { useEffect, useState, useCallback } from "react";
 import { Header } from "./Header";
-import { TestComponent } from "./TestComponent";
 import { AddOrEditMeal } from "../views/AddMeal";
 import { UserClientList } from "../views/UserClientList";
 import { Home } from "../views/Home";
@@ -16,11 +14,11 @@ import { UserIngredientList } from "../views/UserIngredientList";
 import { Community } from "../views/Community";
 import { MyMealsCalendar } from "../views/MyMealsCalendar";
 import { MealTemplates } from "../views/MealTemplates";
+import { jwtDecode } from "jwt-decode";
 
 export const NavigationManager = () => {
   const navigation = useNavigate();
 
-  // const [loggedIn, setLoggedIn] = useState(false);
   const [loggedInProfile, setLoggedInprofile] = useState(null);
   const [isClient, setIsClient] = useState(null);
 
@@ -31,7 +29,6 @@ export const NavigationManager = () => {
     localStorage.removeItem("roles");
     localStorage.removeItem("email");
     localStorage.removeItem("token");
-    // setLoggedIn(false);
     setLoggedInprofile(null);
     setIsClient(null);
     setLoggedInToken(null);
@@ -46,9 +43,6 @@ export const NavigationManager = () => {
 
   const onLogIn = useCallback(
     (email, roles, token, justLoggedIn) => {
-      // if (token === loggedInToken && loggedInProfile.email === email && roles) {
-      //   return;
-      // }
       Axios.get(
         `//localhost:3500/${
           roles.includes("user") ? `search` : `clients/getClient`
@@ -60,7 +54,6 @@ export const NavigationManager = () => {
         .then((res) => {
           console.log("loggin in");
           setIsClient(roles.includes("user") ? false : true);
-          // setLoggedIn(true);
           setLoggedInprofile(res.data);
           console.log(res);
           setLoggedInToken(token);
@@ -94,17 +87,26 @@ export const NavigationManager = () => {
 
   useEffect(() => {
     const checkLoggedInState = () => {
+      console.log("checking logged in state USE EFFECT");
+
       const email = localStorage.getItem("email");
       const token = localStorage.getItem("token");
       const roles = localStorage.getItem("roles");
 
-      console.log("checking logged in state USE EFFECT");
-
-      if (email && token && roles) {
-        onLogIn(email, roles, token, false);
-      } else if (!email || !token || !roles) {
+      if (!email || !token || !roles) {
         onLogOut();
+        return;
       }
+
+      const JWTexp = jwtDecode(token).exp * 1000;
+      const JWTexpired = Date.now() >= JWTexp;
+
+      if (JWTexpired) {
+        onLogOut();
+        return;
+      }
+
+      onLogIn(email, roles, token, false);
     };
 
     checkLoggedInState();
@@ -197,7 +199,6 @@ export const NavigationManager = () => {
               />
             }
           />
-          <Route path="/notLoggedIn" element={<NotLoggedIn />} />
           <Route
             path="/assignClient"
             element={
@@ -255,7 +256,6 @@ export const NavigationManager = () => {
               />
             }
           />
-          <Route path="/test" element={<TestComponent />} />
           <Route
             path="/myMeals"
             element={

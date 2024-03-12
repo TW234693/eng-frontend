@@ -5,8 +5,11 @@ import { Button, CircularProgress } from "@mui/material";
 import { AddRounded, ArrowBack } from "@mui/icons-material";
 import { ClientCard } from "../components/ClientCard";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export const UserClientList = ({ checkLoggedInState, email, token }) => {
+  const { t } = useTranslation();
+
   const goBack = () => {
     navigation("/home", { replace: true });
   };
@@ -49,7 +52,7 @@ export const UserClientList = ({ checkLoggedInState, email, token }) => {
             variant={"contained"}
             startIcon={<ArrowBack />}
           >
-            Go back
+            {`${t("go_back")}`}
           </Button>
           <Button
             onClick={onAddNewClient}
@@ -57,7 +60,7 @@ export const UserClientList = ({ checkLoggedInState, email, token }) => {
             variant="contained"
             startIcon={<AddRounded />}
           >
-            Add a new client
+            {`${t("clients_addNewClient")}`}
           </Button>
         </div>
       </Grid>
@@ -71,7 +74,7 @@ export const UserClientList = ({ checkLoggedInState, email, token }) => {
         })
       ) : (
         <Grid xs={12}>
-          <h2>Fetching client data...</h2>
+          <h2>{`${t("clients_fetchingData")}`}</h2>
           <CircularProgress color="success" />
         </Grid>
       )}

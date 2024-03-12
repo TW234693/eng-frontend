@@ -6,12 +6,16 @@ import Axios from "axios";
 import { UserProfileCard } from "../components/UserProfileCard";
 import { trim } from "lodash";
 
+import { useTranslation } from "react-i18next";
+
 export const Community = ({ loggedIn }) => {
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState(null);
   const [currentFirstResultIndex, setCurrentFirstResultIndex] = useState(0);
 
   const searchViewLimit = 3;
+
+  const { t } = useTranslation();
 
   const navigation = useNavigate();
   const goBack = () => {
@@ -28,9 +32,8 @@ export const Community = ({ loggedIn }) => {
 
   const onSearch = () => {
     const q = trim(query);
-    Axios.get(`//localhost:3500/search/${q.length ? `q=${q}` : ""}`)
+    Axios.get(`//localhost:3500/search/${q.length ? `q=${encodeURI(q)}` : ""}`)
       .then((res) => {
-        // console.log(res);
         console.log("set results");
         console.log(res.data);
         setSearchResults(res.data);
@@ -76,7 +79,7 @@ export const Community = ({ loggedIn }) => {
             variant={"contained"}
             startIcon={<ArrowBack />}
           >
-            Go back
+            {`${t("go_back")}`}
           </Button>
         </div>
       </Grid>
@@ -90,7 +93,7 @@ export const Community = ({ loggedIn }) => {
           }}
         >
           <TextField
-            placeholder={"Search for a dietitian"}
+            placeholder={`${t("community_searchForDietitian")}`}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -105,7 +108,7 @@ export const Community = ({ loggedIn }) => {
             }}
           />
           <Button variant="contained" startIcon={<Search />} onClick={onSearch}>
-            Search
+            {`${t("search")}`}
           </Button>
         </div>
       </Grid>
@@ -117,9 +120,6 @@ export const Community = ({ loggedIn }) => {
                   i >= currentFirstResultIndex &&
                   i < currentFirstResultIndex + searchViewLimit && (
                     <Grid key={i} item xs={6} md={4}>
-                      {/* <div style={{ border: "2px solid red" }}>
-                    {result.name} {result.surname}
-                  </div> */}
                       <div style={{ height: "100%" }}>
                         <UserProfileCard profile={result} token={null} />
                       </div>
@@ -145,7 +145,7 @@ export const Community = ({ loggedIn }) => {
             startIcon={<ArrowBack />}
             disabled={currentFirstResultIndex === 0}
           >
-            Previous results
+            {`${t("community_previousResults")}`}
           </Button>
 
           <Button
@@ -158,7 +158,7 @@ export const Community = ({ loggedIn }) => {
               searchResults.length <= currentFirstResultIndex + searchViewLimit
             }
           >
-            Next results
+            {`${t("community_nextResults")}`}
           </Button>
         </div>
       </Grid>

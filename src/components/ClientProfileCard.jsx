@@ -22,6 +22,7 @@ import {
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 const PASSWORD_LOWERCASE_REGEX = /^(?=.*[a-z]).*$/;
 const PASSWORD_UPPERCASE_REGEX = /^(?=.*[A-Z]).*$/;
@@ -30,6 +31,8 @@ const PASSWORD_SPECIAL_REGEX = /^(?=.*[!@#$%^&*]).*$/;
 const PASSWORD_LENGTH_REGEX = /^.{8,32}$/;
 
 export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
+  const { t } = useTranslation();
+
   const isEditable = !!token;
   const defaultPhoto = "https://www.w3schools.com/howto/img_avatar.png";
   const [responseMsg, setResponseMsg] = useState("");
@@ -74,63 +77,55 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
 
   useEffect(() => {
     if (currentPassword.length <= 0) {
-      setCurrentPasswordError("You must provide your current password.");
+      setCurrentPasswordError(t("password_error_noCurrent"));
       return;
     }
     setCurrentPasswordError("");
-  }, [currentPassword]);
+  }, [currentPassword, t]);
 
   useEffect(() => {
     if (!PASSWORD_LENGTH_REGEX.test(newPassword)) {
-      setNewPasswordError(
-        "The new password must be between 8 and 32 characters long."
-      );
+      setNewPasswordError(t("password_error_length"));
       return;
     }
     if (!PASSWORD_LOWERCASE_REGEX.test(newPassword)) {
-      setNewPasswordError(
-        "The new password must contain at least one lower-case letter."
-      );
+      setNewPasswordError(t("password_error_noLowercase"));
       return;
     }
     if (!PASSWORD_UPPERCASE_REGEX.test(newPassword)) {
-      setNewPasswordError(
-        "The new password must contain at least one upper case letter."
-      );
+      setNewPasswordError(t("password_error_noUppercase"));
       return;
     }
     if (!PASSWORD_NUMBER_REGEX.test(newPassword)) {
-      setNewPasswordError("The new password must contain at least one number.");
+      setNewPasswordError(t("password_error_noDigit"));
       return;
     }
     if (!PASSWORD_SPECIAL_REGEX.test(newPassword)) {
-      setNewPasswordError(
-        "The new password must contain at least one of the following characters: ! @ # $ % ^ & *"
-      );
+      setNewPasswordError(t("password_error_noSpecial"));
       return;
     }
     if (newPassword !== newPasswordRepeat) {
-      setNewPasswordError("Provided new passwords do not match.");
+      setNewPasswordError(t("password_error_repeatMismatch"));
       return;
     }
     setNewPasswordError("");
-  }, [newPassword, newPasswordRepeat]);
+  }, [newPassword, newPasswordRepeat, t]);
 
   useEffect(() => {
     if (!name) {
-      setNameError("The first name cannot be empty.");
+      setNameError(t("firstName_error_missing"));
       return;
     }
     setNameError("");
-  }, [name]);
+  }, [name, t]);
 
   useEffect(() => {
     if (!surname) {
-      setSurnameError("The surname cannot be empty.");
+      setSurnameError(t("familyName_error_missing"));
       return;
     }
     setSurnameError("");
-  }, [surname]);
+  }, [surname, t]);
 
   const toggleEditMode = () => {
     if (!isEditable) {
@@ -193,7 +188,7 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
         setUpdatingPassword(false);
         setInEditMode(false);
         setIsSuccess(true);
-        setResponseMsg(responseMessage);
+        setResponseMsg(t(responseMessage));
 
         setOpenSnackbar(true);
       })
@@ -206,7 +201,7 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
 
         const responseMessage = err.response.data.message;
         setIsSuccess(false);
-        setResponseMsg(responseMessage);
+        setResponseMsg(t(responseMessage));
       });
   };
 
@@ -289,7 +284,7 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
               fullWidth
               color="info"
             >
-              {inEditMode ? "Stop Editing" : "Start editing"}
+              {inEditMode ? t("form_stopEditing") : t("form_startEditing")}
             </Button>
           </ListItem>
         )}
@@ -302,7 +297,7 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
                 fullWidth
                 color="success"
               >
-                Save Changes
+                {`${t("form_saveChanges")}`}
               </Button>
             </ListItem>
             <ListItem disablePadding>
@@ -312,7 +307,7 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
                 fullWidth
                 color="error"
               >
-                Reset changes
+                {`${t("form_resetChanges")}`}
               </Button>
             </ListItem>
           </>
@@ -324,16 +319,16 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
             display: `${isEditable ? "auto" : "none"}`,
           }}
         >
-          {inEditMode ? "Update your profile" : null}
+          {inEditMode ? t("profile_form_updateProfileHeading") : null}
         </Divider>
         {(!isEditable || inEditMode) && (
           <ListItem>
             {inEditMode ? (
               <TextField
-                label={"Profile picture URL"}
+                label={t("profile_form_pfpURL")}
                 type="url"
                 value={photo}
-                placeholder="If left empty, the above default image will be used."
+                placeholder={t("profile_form_emptyPfp")}
                 onChange={(e) => setPhoto(e.target.value)}
                 onBlur={(e) =>
                   setPhoto(e.target.value ? e.target.value : defaultPhoto)
@@ -346,8 +341,8 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
                   whiteSpace: "pre-wrap",
                   display: `${isEditable ? "auto" : "none"}`,
                 }}
-                primary={`Profile picture :\n${
-                  photo ? photo : "(Default image)"
+                primary={`${t("profile_picture")} :\n${
+                  photo ? photo : `(${t("default_image")})`
                 }`}
               />
             ) : (
@@ -359,7 +354,7 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
                   margin: "4px 0",
                 }}
               >
-                <span>Email: </span>
+                <span>{`${t("email")}`}: </span>
                 <span>{profile.email}</span>
               </div>
             )}
@@ -378,13 +373,12 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
                 margin: "4px 0",
               }}
             >
-              <span>First name:</span>
+              <span>{`${t("first_name")}`}:</span>
               <span>{name}</span>
             </div>
           ) : (
-            // <ListItemText primary={`First name: ${name}`} />
             <TextField
-              label={"First name"}
+              label={t("first_name")}
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -411,12 +405,12 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
                 margin: "4px 0",
               }}
             >
-              <span>Surname:</span>
+              <span>{`${t("family_name")}`}:</span>
               <span>{surname}</span>
             </div>
           ) : (
             <TextField
-              label={"Surname"}
+              label={t("family_name")}
               type="text"
               value={surname}
               onChange={(e) => setSurname(e.target.value)}
@@ -439,7 +433,9 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
               onClick={() => setUpdatingPassword(!updatingPassword)}
               fullWidth
             >
-              {updatingPassword ? "Do not change password" : "Change password"}
+              {updatingPassword
+                ? t("profile_form_doNotChangePassword")
+                : t("profile_form_changePassword")}
             </Button>
           </ListItem>
         )}
@@ -448,12 +444,12 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
           textAlign="center"
           sx={{ display: updatingPassword && inEditMode ? "auto" : "none" }}
         >
-          Update your password
+          {`${t("profile_form_updatePasswordHeading")}`}
         </Divider>
         {!updatingPassword || !inEditMode ? null : (
           <ListItem>
             <TextField
-              label={"Current password"}
+              label={t("profile_form_currentPassword")}
               type={obscurePassword ? "password" : "text"}
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
@@ -518,7 +514,7 @@ export const ClientProfileCard = ({ profile, token, fullHeight = true }) => {
         {!updatingPassword || !inEditMode ? null : (
           <ListItem>
             <TextField
-              label={"Repeat new password"}
+              label={t("profile_form_newPasswordRepeat")}
               type={obscurePassword ? "password" : "text"}
               value={newPasswordRepeat}
               onChange={(e) => setNewPasswordRepeat(e.target.value)}

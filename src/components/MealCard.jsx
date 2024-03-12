@@ -17,6 +17,7 @@ import moment from "moment";
 import Axios from "axios";
 import { NUTRIENTS } from "../utils/Nutrients";
 import { isEqual } from "lodash";
+import { useTranslation } from "react-i18next";
 
 const DEFAULT_MEAL_PHOTO =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3bdxwcdCX-_0GQAFHcZrOHgyLVlvF1P0BbxlVTiENdYIErIoqH4PQYmPs-fVnxeLP_XA&usqp=CAUs";
@@ -38,6 +39,8 @@ export const MealCard = ({
   initialMealData = emptyMeal,
   isTemplate = false,
 }) => {
+  const { t, i18n } = useTranslation();
+
   const originallyEmpty = useRef(isEqual(initialMealData, emptyMeal));
   const [expandInstructions, setExpandInstructions] = useState(false);
   const toggleExpandInstructions = () => {
@@ -66,11 +69,11 @@ export const MealCard = ({
   const [mealNameError, setMealNameError] = useState("");
   useEffect(() => {
     if (!mealName) {
-      setMealNameError("Please provide a name for the meal.");
+      setMealNameError(t("mealCard_noNameError"));
       return;
     }
     setMealNameError("");
-  }, [mealName]);
+  }, [mealName, t]);
 
   const [mealInstructions, setMealInstructions] = useState(
     initialMealData.instructions
@@ -78,13 +81,11 @@ export const MealCard = ({
   const [mealInstructionsError, setMealInstructionsError] = useState("");
   useEffect(() => {
     if (!mealInstructions) {
-      setMealInstructionsError(
-        "Please provide cooking instructions for the meal."
-      );
+      setMealInstructionsError(t("mealCard_noInstructionsError"));
     } else {
       setMealInstructionsError("");
     }
-  }, [mealInstructions]);
+  }, [mealInstructions, t]);
 
   const [mealMinutesCookingTime, setMealMinutesCookingTime] = useState(
     initialMealData.minutesCookingTime
@@ -93,23 +94,21 @@ export const MealCard = ({
     useState("");
   useEffect(() => {
     if (!mealMinutesCookingTime) {
-      setMealMinutesCookingTimeError(
-        "Please provide the meal preperation time."
-      );
+      setMealMinutesCookingTimeError(t("mealCard_noCookingTimeError"));
       return;
     }
     setMealMinutesCookingTimeError("");
-  }, [mealMinutesCookingTime]);
+  }, [mealMinutesCookingTime, t]);
 
   const [mealDate, setMealDate] = useState(initialMealData.mealDate);
   const [mealDateError, setMealDateError] = useState("");
   useEffect(() => {
     if (!mealDate) {
-      setMealDateError("Please choose a date for the meal.");
+      setMealDateError(t("mealCard_noDateError"));
     } else {
       setMealDateError("");
     }
-  }, [mealDate]);
+  }, [mealDate, t]);
 
   const [addMealError, setAddMealError] = useState(null);
 
@@ -152,14 +151,12 @@ export const MealCard = ({
       !mealMinutesCookingTime ||
       !ingredients
     ) {
-      setAddMealError(
-        "Meal name, meal date, instructions, cooking time, and at least one ingredient is required."
-      );
+      setAddMealError(t("mealCard_somethingMissingError"));
       return;
     }
 
     if (ingredients.length === 0) {
-      setAddMealError("Meal does not contain any ingredients.");
+      setAddMealError(t("mealCard_noIngredients"));
       return;
     }
 
@@ -169,7 +166,7 @@ export const MealCard = ({
       mealDateError ||
       mealMinutesCookingTimeError
     ) {
-      setAddMealError("Please fix existing errors.");
+      setAddMealError(t("mealCard_fixExisitngErrors"));
       return;
     }
 
@@ -187,9 +184,8 @@ export const MealCard = ({
     }
 
     if (!clientDetails && !isTemplate) {
-      setAddMealError(
-        "An error has occured, please update the values and try again."
-      );
+      setAddMealError(t("form_error_updateAndRetry"));
+      checkLoggedInState();
       return;
     }
 
@@ -197,9 +193,7 @@ export const MealCard = ({
     const loggedInUserEmail = localStorage.getItem("email");
 
     if (!loggedInUserToken || !loggedInUserEmail) {
-      setAddMealError(
-        "An error has occured, please try to log out and in again."
-      );
+      setAddMealError(t("form_error_relog"));
       checkLoggedInState();
       return;
     }
@@ -219,7 +213,7 @@ export const MealCard = ({
     const onRequestSuccess = (res) => {
       const responseMessage = res.data.message;
       setShowErrors(false);
-      setResponseMessage(responseMessage);
+      setResponseMessage(t(responseMessage));
       setOpenSnackbar(true);
       setSuccess(true);
     };
@@ -228,7 +222,7 @@ export const MealCard = ({
       const responseMessage = error.response.data.message;
       setOpenSnackbar(true);
       setSuccess(false);
-      setResponseMessage(responseMessage);
+      setResponseMessage(t(responseMessage));
     };
 
     if (!originallyEmpty.current) {
@@ -273,7 +267,7 @@ export const MealCard = ({
                 startIcon={editMode ? <Save /> : <Edit />}
                 fullWidth
               >
-                {editMode ? "Save changes" : "Start editing"}
+                {editMode ? t("form_saveChanges") : t("form_startEditing")}
               </Button>
             </ListItem>
             <ListItem disablePadding>
@@ -284,8 +278,8 @@ export const MealCard = ({
                 color="success"
               >
                 {!originallyEmpty.current
-                  ? "Finish and save the meal"
-                  : "Finish and add the meal"}
+                  ? t("mealCard_finishAndSave")
+                  : t("mealCard_finishAndAdd")}
               </Button>
               <Snackbar
                 open={openSnackbar}
@@ -314,10 +308,10 @@ export const MealCard = ({
         <ListItem disablePadding>
           {editMode && isEditable ? (
             <TextField
-              label={"Meal Photo URL"}
+              label={t("meal_photoURL")}
               type="url"
               value={mealPhoto}
-              placeholder="If left empty, the above default image will be used."
+              placeholder={t("mealCard_emptyPhotoExplain")}
               onChange={(e) => setMealPhoto(e.target.value)}
               sx={{ m: "10px" }}
               fullWidth
@@ -329,10 +323,10 @@ export const MealCard = ({
           {editMode && isEditable ? (
             <>
               <TextField
-                label={"Meal Name"}
+                label={t("meal_name")}
                 type="text"
                 value={mealName}
-                placeholder="Meal name"
+                placeholder={t("meal_name")}
                 onChange={(e) => setMealName(e.target.value)}
                 color={mealNameError && showErrors ? "error" : "primary"}
                 sx={{ m: "10px" }}
@@ -345,7 +339,7 @@ export const MealCard = ({
               ) : null}
             </>
           ) : (
-            <ListItemText primary={`Meal name: ${mealName}`} />
+            <ListItemText primary={`${t("meal_name")}: ${mealName}`} />
           )}
         </ListItem>
         <Divider />
@@ -353,10 +347,10 @@ export const MealCard = ({
           {editMode && isEditable ? (
             <>
               <TextField
-                label={"Cooking time in minutes"}
+                label={t("meal_cookingTimeInMinutes")}
                 type="number"
                 value={mealMinutesCookingTime}
-                placeholder="Cooking time"
+                placeholder={t("meal_cookingTime")}
                 onChange={(e) =>
                   setMealMinutesCookingTime(
                     Math.max(Math.floor(e.target.value), 0)
@@ -378,7 +372,9 @@ export const MealCard = ({
             </>
           ) : (
             <ListItemText
-              primary={`Cooking time: ${mealMinutesCookingTime} minutes`}
+              primary={`${t("meal_cookingTime")}: ${mealMinutesCookingTime} ${t(
+                "meal_minutes"
+              )}`}
             />
           )}
         </ListItem>
@@ -387,10 +383,9 @@ export const MealCard = ({
           {editMode && isEditable ? (
             <>
               <TextField
-                label={"Meal Date"}
+                label={t("meal_date")}
                 type="date"
                 value={moment(mealDate).format("YYYY-MM-DD")}
-                placeholder="Meal name"
                 onChange={(e) => setMealDate(e.target.value)}
                 color={mealDateError && showErrors ? "error" : "primary"}
                 sx={{ m: "10px" }}
@@ -404,9 +399,9 @@ export const MealCard = ({
             </>
           ) : (
             <ListItemText
-              primary={`Meal date: ${moment(mealDate).format(
-                "dddd (YYYY.MM.DD)"
-              )}`}
+              primary={`${t("meal_date")}: ${moment(mealDate)
+                .locale(i18n.resolvedLanguage)
+                .format("LL")}`}
             />
           )}
         </ListItem>
@@ -418,10 +413,10 @@ export const MealCard = ({
                 multiline
                 minRows={3}
                 maxRows={Infinity}
-                label={"Recipe"}
+                label={t("meal_instructions")}
                 type="text"
                 value={mealInstructions}
-                placeholder="Cooking recipe"
+                placeholder={t("meal_instructions")}
                 onChange={(e) => setMealInstructions(e.target.value)}
                 color={
                   mealInstructionsError && showErrors ? "error" : "primary"
@@ -451,7 +446,7 @@ export const MealCard = ({
                     WebkitBoxOrient: "vertical",
                   }}
                 >
-                  {`Recipe:\n${mealInstructions}`}
+                  {`${t("meal_instructions")}:\n${mealInstructions}`}
                 </Typography>
               }
             />
@@ -467,7 +462,9 @@ export const MealCard = ({
                 startIcon={<List />}
                 fullWidth
               >
-                {showNutrients ? "Show ingredients" : "Show nutrients"}
+                {showNutrients
+                  ? t("mealCard_showIngredients")
+                  : t("mealCard_showNutrients")}
               </Button>
             </ListItem>
             {showNutrients ? (
@@ -488,8 +485,9 @@ export const MealCard = ({
                 );
                 return (
                   <>
-                    {Object.entries(nutrients).map(
-                      ([nutrientCode, nutrientAmount], index) => {
+                    {Object.entries(nutrients)
+                      .sort((a, b) => a[1] - b[1])
+                      .map(([nutrientCode, nutrientAmount], index) => {
                         const nutrientInfo = NUTRIENTS.find(
                           (e) => e.code === nutrientCode
                         );
@@ -503,9 +501,12 @@ export const MealCard = ({
                               style={{
                                 display: "flex",
                                 justifyContent: "space-between",
+                                gap: "5px",
                               }}
                             >
-                              <span>{nutrientInfo.label}:</span>
+                              <span>
+                                {nutrientInfo.label[i18n.resolvedLanguage]}:
+                              </span>
                               <span>
                                 {nutrientAmount.toFixed(3).toString()}
                                 {nutrientInfo.unit}
@@ -513,8 +514,7 @@ export const MealCard = ({
                             </ListItem>
                           </React.Fragment>
                         );
-                      }
-                    )}
+                      })}
                   </>
                 );
               })()

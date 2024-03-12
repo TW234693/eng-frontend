@@ -7,23 +7,24 @@ import {
   CircularProgress,
   Dialog,
   DialogContent,
+  Card,
 } from "@mui/material";
 import { ArrowBack, Add } from "@mui/icons-material";
 import { IngredientCard } from "../components/IngredientCard";
+import { useTranslation } from "react-i18next";
 
 export const UserIngredientList = ({ checkLoggedInState, email, token }) => {
+  const { t } = useTranslation();
   const goBack = () => {
     navigation("/home", { replace: true });
   };
 
   const navigation = useNavigate();
   const [userIngredients, setUserIngredients] = useState(null);
-
+  const [noIngredients, setNoIngredients] = useState(false);
   const [dialogOpened, setDialogOpened] = useState(false);
 
   const onAddNewIngredient = () => {
-    // console.log("create ingredient");
-    // navigation("/createIngredient", { replace: true });
     setDialogOpened(true);
   };
 
@@ -32,7 +33,13 @@ export const UserIngredientList = ({ checkLoggedInState, email, token }) => {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
-        setUserIngredients(res.data.ingredients);
+        console.log("response");
+        console.log(res);
+        if (!res.data.ingredients) {
+          setNoIngredients(true);
+        } else {
+          setUserIngredients(res.data.ingredients);
+        }
       })
       .catch(() => {
         console.log("something went wrong when fetching user ingredients");
@@ -59,7 +66,7 @@ export const UserIngredientList = ({ checkLoggedInState, email, token }) => {
               variant={"contained"}
               startIcon={<ArrowBack />}
             >
-              Go back
+              {`${t("go_back")}`}
             </Button>
             <Button
               onClick={onAddNewIngredient}
@@ -67,11 +74,11 @@ export const UserIngredientList = ({ checkLoggedInState, email, token }) => {
               startIcon={<Add />}
               color="success"
             >
-              Add new ingredient
+              {`${t("ingredientList_addNewIngredient")}`}
             </Button>
           </div>
         </Grid>
-        {userIngredients ? (
+        {userIngredients && !noIngredients ? (
           userIngredients.map((ingredient, i) => {
             return (
               <Grid item xs={4} key={i}>
@@ -83,9 +90,19 @@ export const UserIngredientList = ({ checkLoggedInState, email, token }) => {
               </Grid>
             );
           })
+        ) : noIngredients ? (
+          <>
+            <Grid item xs={3}></Grid>
+            <Grid item xs={6}>
+              <Card>
+                <h3>{`${t("ingredientList_noIngredients")}`}</h3>
+              </Card>
+            </Grid>
+            <Grid item xs={3}></Grid>
+          </>
         ) : (
           <Grid item xs={12}>
-            <h2>Fetching ingredient data...</h2>
+            <h2>{`${t("ingredientList_fetchingData")}`}</h2>
             <CircularProgress color="success" />
           </Grid>
         )}
@@ -97,8 +114,10 @@ export const UserIngredientList = ({ checkLoggedInState, email, token }) => {
         fullWidth
       >
         <DialogContent>
-          <h2>Create a new ingredient</h2>
-          <IngredientCard isEditable={true} token={token} />
+          <h2 style={{ textAlign: "center" }}>{`${t(
+            "ingredientList_createNewIngredient"
+          )}`}</h2>
+          <IngredientCard isEditable={true} token={token} isOpened={true} />
         </DialogContent>
       </Dialog>
     </>

@@ -7,8 +7,11 @@ import { NewIngredient } from "../components/NewIngredient";
 import Axios from "axios";
 import { Transition } from "../components/MealCalendar";
 import { MealCalendarEntry } from "../components/MealCalendarEntry";
+import { useTranslation } from "react-i18next";
 
 export const AddOrEditMeal = ({ checkLoggedInState, token }) => {
+  const { t } = useTranslation();
+
   const [dialogOpened, setDialogOpened] = useState(false);
   const [dialogMeals, setDialogMeals] = useState([]);
 
@@ -57,6 +60,7 @@ export const AddOrEditMeal = ({ checkLoggedInState, token }) => {
       })
       .catch(() => {
         console.log("Something went wrong when fetching user templates.");
+        checkLoggedInState();
       });
   };
 
@@ -72,7 +76,12 @@ export const AddOrEditMeal = ({ checkLoggedInState, token }) => {
 
   const onChooseTemplate = (meal) => {
     setMealingredients(meal.ingredients);
-    setInitialMealData({ ...meal, _id: mealId });
+    console.log(meal);
+    setInitialMealData({
+      ...meal,
+      mealDate: undefined,
+      _id: mealId,
+    });
     setDialogOpened(false);
     setDialogMeals([]);
   };
@@ -94,7 +103,7 @@ export const AddOrEditMeal = ({ checkLoggedInState, token }) => {
 
   if (!clientDetails && !isTemplate) {
     navigation("/myClients", { replace: true });
-    return <h2>No client details found.</h2>;
+    return <h2>{`${t("addEditMeal_noClientData")}`}</h2>;
   }
 
   return (
@@ -111,7 +120,7 @@ export const AddOrEditMeal = ({ checkLoggedInState, token }) => {
             variant={"contained"}
             startIcon={<ArrowBack />}
           >
-            Go back
+            {`${t("go_back")}`}
           </Button>
           {!isTemplate && (
             <Button
@@ -120,7 +129,7 @@ export const AddOrEditMeal = ({ checkLoggedInState, token }) => {
               startIcon={<MenuBook />}
               color="success"
             >
-              Use a template
+              {`${t("addEditMeal_useTemplate")}`}
             </Button>
           )}
         </div>
@@ -137,8 +146,7 @@ export const AddOrEditMeal = ({ checkLoggedInState, token }) => {
           <Grid container spacing={4}>
             <Grid xs={12} item>
               <Alert severity="warning">
-                Using a template will erase the current configuration of the
-                form.
+                {`${t("addEditMeal_templateWarning")}`}
               </Alert>
             </Grid>
             {dialogMeals.map((meal, id) => {
