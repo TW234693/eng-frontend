@@ -99,6 +99,8 @@ export const en = {
     "Please, enter the email of the client you would like to add.",
   clients_notes: "Client notes",
   clients_addNewClient: "Add a new client",
+  clients_noClients:
+    "You have no clients, you may assign a new client with the above button.",
   clients_notes_error:
     "An error has occured when trying to update the client's notes.",
 

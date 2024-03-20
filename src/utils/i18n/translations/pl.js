@@ -98,6 +98,8 @@ export const pl = {
     "Proszę podać email klienta, którego chcesz przypisać.",
   clients_notes: "Notatki klienta",
   clients_addNewClient: "Dodaj nowego klienta",
+  clients_noClients:
+    "Obecnie nie masz żadnych klientów, możesz przypisać nowego klienta powyższym przyciskiem.",
   clients_notes_error: "Wystąpił błąd podczas aktualizowania notatek klienta.",
 
   client_addNewMeal: "Dodaj nowy posiłek",

@@ -1,7 +1,7 @@
 import Grid from "@mui/system/Unstable_Grid/Grid";
 import Axios from "axios";
 import { useState, useEffect } from "react";
-import { Button, CircularProgress } from "@mui/material";
+import { Button, Card, CircularProgress } from "@mui/material";
 import { AddRounded, ArrowBack } from "@mui/icons-material";
 import { ClientCard } from "../components/ClientCard";
 import { useNavigate } from "react-router-dom";
@@ -64,6 +64,19 @@ export const UserClientList = ({ checkLoggedInState, email, token }) => {
           </Button>
         </div>
       </Grid>
+      {userClients && userClients.length === 0 && (
+        <>
+          <Grid xs={3}></Grid>
+          <Grid xs={6}>
+            <Card>
+              <h3 style={{ color: "rgb(220,0,0)" }}>
+                {`${t("clients_noClients")}`}
+              </h3>
+            </Card>
+          </Grid>
+          <Grid xs={3}></Grid>
+        </>
+      )}
       {userClients ? (
         userClients.map((client, i) => {
           return (
