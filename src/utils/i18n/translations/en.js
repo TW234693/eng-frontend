@@ -88,6 +88,7 @@ export const en = {
   community_searchForDietitian: "Search for a dietitian",
   community_previousResults: "Next results",
   community_nextResults: "Previous results",
+  community_noResults: "No matching results found.",
 
   clients_fetchingData: "Fetching client data...",
   clients_dietPlan: "Diet plan",
@@ -246,4 +247,16 @@ export const en = {
   assign_error_assignedToOther:
     "This client is assigned to another dietitian already.",
   assign_success: "Success - Client assigned.",
+
+  createAccount_success:
+    "Account created - an email with the account activation link has been sent.",
+
+  activateAccount_waiting: "Awaiting server response...",
+  activateAccount_successHeading: "Account activated!",
+  activateAccount_successBody:
+    "Your account has been sucesfully activated. You may now log in.",
+  activateAccount_errorHeading: "Account activation failure!",
+  activateAccount_errorBody1:
+    "An error has occured while trying to activate the account ",
+  activateAccount_errorBody2: ". Please contact administrators.",
 };

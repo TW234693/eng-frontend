@@ -87,6 +87,7 @@ export const pl = {
   community_searchForDietitian: "Wyszukaj dietetyka",
   community_previousResults: "Poprzednie wyniki",
   community_nextResults: "Kolejne wyniki",
+  community_noResults: "Nie znaleziono pasujących rezultatów.",
 
   clients_fetchingData: "Pobieranie danych klientów...",
   clients_dietPlan: "Plan diety",
@@ -250,4 +251,16 @@ export const pl = {
   assign_error_assignedToOther:
     "Ten klient jest przypisany do innego dietetyka.",
   assign_success: "Sukces - Przypisano klienta.",
+
+  createAccount_success:
+    "Konto zostało utworzone - wysłano email z linkiem do aktywacji konta.",
+
+  activateAccount_waiting: "Oczekiwanie odpowiedzi serwera...",
+  activateAccount_successHeading: "Konto aktywowane!",
+  activateAccount_successBody:
+    "Twoje konto zostało aktywowane. Możesz się teraz zalogować.",
+  activateAccount_errorHeading: "Nie udało się aktywować konta!",
+  activateAccount_errorBody1: "Wystąpił bład podczas próby aktywacji konta ",
+  activateAccount_errorBody2:
+    ". Proszę skontaktować się z administratorami systemu.",
 };

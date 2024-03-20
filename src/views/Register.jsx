@@ -21,7 +21,7 @@ const PASSWORD_SPECIAL_REGEX = /^(?=.*[!@#$%^&*]).*$/;
 const PASSWORD_LENGTH_REGEX = /^.{8,32}$/;
 
 export const Register = ({ navigation, isLoggedIn }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [showErrors, setShowErrors] = useState(false);
   const [email, setEmail] = useState("");
@@ -37,7 +37,7 @@ export const Register = ({ navigation, isLoggedIn }) => {
   const [description, setDescription] = useState("");
   const [isClient, setIsClient] = useState(false);
 
-  const [registerError, setRegisterError] = useState("");
+  const [registerResult, setRegisterResult] = useState("");
 
   useEffect(() => {
     if (!PASSWORD_LENGTH_REGEX.test(password)) {
@@ -86,10 +86,10 @@ export const Register = ({ navigation, isLoggedIn }) => {
   });
 
   useEffect(() => {
-    if (registerError) {
-      setRegisterError(t("auth_register_invalid"));
+    if (!registerResult) {
+      setRegisterResult("");
     }
-  }, [t, registerError]);
+  }, [t, registerResult, password, passwordRepeat, email]);
 
   const handleRegister = (event) => {
     event.preventDefault();
@@ -98,11 +98,11 @@ export const Register = ({ navigation, isLoggedIn }) => {
       return;
     }
     if (!name) {
-      setRegisterError(t("firstName_error_missing"));
+      setRegisterResult(t("firstName_error_missing"));
       return;
     }
     if (!surname) {
-      setRegisterError(t("familyName_error_missing"));
+      setRegisterResult(t("familyName_error_missing"));
       return;
     }
 
@@ -112,6 +112,7 @@ export const Register = ({ navigation, isLoggedIn }) => {
       name: name,
       surname: surname,
       isClient: isClient,
+      locale: i18n.resolvedLanguage ?? "en",
     };
     if (!isClient) {
       registerRequestObject.description = description;
@@ -119,14 +120,15 @@ export const Register = ({ navigation, isLoggedIn }) => {
 
     Axios.post("//localhost:3500/register", registerRequestObject)
       .then((res) => {
-        const responseMessage = res.data.message;
-        setRegisterError(responseMessage);
         setTimeout(() => {
           navigation("/login", { replace: true });
-        }, 2000);
+        }, 5000);
+        const responseMessage = res.data.message;
+        setRegisterResult(responseMessage);
       })
       .catch(() => {
-        setRegisterError(t("auth_register_invalid"));
+        console.log("register error");
+        setRegisterResult(t("auth_register_invalid"));
       });
   };
 
@@ -259,9 +261,7 @@ export const Register = ({ navigation, isLoggedIn }) => {
         {`${t("register")}`}
       </Button>
 
-      <p style={{ display: registerError ? "block" : "none" }}>
-        {registerError}
-      </p>
+      {registerResult && <p>{t(registerResult)}</p>}
       <p>
         {`${t("register_accountAlready")} `}
         <a href="../login">{`${t("register_loginHere")}`}</a>

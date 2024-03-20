@@ -14,6 +14,7 @@ import { UserIngredientList } from "../views/UserIngredientList";
 import { Community } from "../views/Community";
 import { MyMealsCalendar } from "../views/MyMealsCalendar";
 import { MealTemplates } from "../views/MealTemplates";
+import { ActivateAccount } from "../views/ActivateAccount";
 import { jwtDecode } from "jwt-decode";
 
 export const NavigationManager = () => {
@@ -35,7 +36,8 @@ export const NavigationManager = () => {
     if (
       !window.location.href.endsWith("/login") &&
       !window.location.href.endsWith("/register") &&
-      !window.location.href.endsWith("/community")
+      !window.location.href.endsWith("/community") &&
+      !window.location.href.includes("/activate/")
     ) {
       navigation("/login", { replace: true });
     }
@@ -149,6 +151,7 @@ export const NavigationManager = () => {
               />
             }
           />
+          <Route path="/activate/:id" element={<ActivateAccount />} />
           <Route
             path="/home"
             element={

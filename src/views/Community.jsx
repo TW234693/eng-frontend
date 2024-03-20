@@ -1,5 +1,5 @@
 import { ArrowBack, ArrowForward, Search } from "@mui/icons-material";
-import { Button, Grid, TextField } from "@mui/material";
+import { Button, Card, Grid, TextField } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Axios from "axios";
@@ -39,6 +39,7 @@ export const Community = ({ loggedIn }) => {
         setSearchResults(res.data);
       })
       .catch((err) => {
+        setSearchResults(null);
         console.log(err);
       });
   };
@@ -114,20 +115,30 @@ export const Community = ({ loggedIn }) => {
       </Grid>
       <Grid item xs={12}>
         <Grid container spacing={3}>
-          {searchResults
-            ? searchResults.map((result, i) => {
-                return (
-                  i >= currentFirstResultIndex &&
-                  i < currentFirstResultIndex + searchViewLimit && (
-                    <Grid key={i} item xs={6} md={4}>
-                      <div style={{ height: "100%" }}>
-                        <UserProfileCard profile={result} token={null} />
-                      </div>
-                    </Grid>
-                  )
-                );
-              })
-            : null}
+          {searchResults ? (
+            searchResults.map((result, i) => {
+              return (
+                i >= currentFirstResultIndex &&
+                i < currentFirstResultIndex + searchViewLimit && (
+                  <Grid key={i} item xs={6} md={4}>
+                    <div style={{ height: "100%" }}>
+                      <UserProfileCard profile={result} token={null} />
+                    </div>
+                  </Grid>
+                )
+              );
+            })
+          ) : (
+            <>
+              <Grid item xs={4}></Grid>
+              <Grid item xs={4}>
+                <Card>
+                  <h3>{t("community_noResults")}</h3>
+                </Card>
+              </Grid>
+              <Grid item xs={4}></Grid>
+            </>
+          )}
         </Grid>
       </Grid>
       <Grid xs={12} item>
