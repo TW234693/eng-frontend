@@ -67,7 +67,13 @@ export const Community = ({ loggedIn }) => {
   });
 
   return (
-    <Grid container spacing={3}>
+    <Grid
+      container
+      spacing={3}
+      onKeyUp={(e) => {
+        e.key === "Enter" && onSearch();
+      }}
+    >
       <Grid xs={12} item>
         <div
           style={{

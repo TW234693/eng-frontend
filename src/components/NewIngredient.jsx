@@ -209,7 +209,11 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
             </FormControl>
           </ListItem>
 
-          <ListItem>
+          <ListItem
+            onKeyUp={(e) => {
+              e.key === "Enter" && onSearch();
+            }}
+          >
             <TextField
               type="text"
               value={searchQuery}
@@ -342,7 +346,11 @@ export const NewIngredient = ({ onAddIngredient, token }) => {
           </Typography>
           <div style={{ display: "flex", justifyContent: "center" }}>
             <List style={{ width: "80%", alignSelf: "center" }}>
-              <ListItem>
+              <ListItem
+                onKeyUp={(e) => {
+                  e.key === "Enter" && onAcceptIngredient();
+                }}
+              >
                 <TextField
                   fullWidth
                   label={"Amount in grams"}

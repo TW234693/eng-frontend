@@ -139,6 +139,12 @@ export const Register = ({ navigation, isLoggedIn }) => {
         flexDirection: "column",
         alignItems: "center",
       }}
+      onKeyUp={(e) => {
+        if (e.key === "Enter") {
+          handleRegister(e);
+          setShowErrors(true);
+        }
+      }}
     >
       <FormControl
         style={{

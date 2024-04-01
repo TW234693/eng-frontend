@@ -85,6 +85,9 @@ export const Login = ({ onLogIn, isLoggedIn }) => {
         flexDirection: "column",
         alignItems: "center",
       }}
+      onKeyUp={(e) => {
+        e.key === "Enter" && handleLogin(e);
+      }}
     >
       <h2>{t("login_welcome")}</h2>
       <FormControl style={{ marginBottom: "10px" }}>
