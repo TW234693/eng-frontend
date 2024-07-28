@@ -5,12 +5,12 @@ export const en = {
 
   logout: "Log out",
   login: "Log in",
-  login_welcome: "Welcome. Please log in.",
+  login_welcome: "Welcome to FeAST. Please log in.",
   login_noAccount: "Don't have an account yet?",
   login_registerHere: "Register here!",
 
   register: "Register",
-  register_welcome: "Welcome. Please register.",
+  register_welcome: "Welcome to FeAST. Please register.",
   register_accountAlready: "Already have an account?",
   register_loginHere: "Log in here!",
 

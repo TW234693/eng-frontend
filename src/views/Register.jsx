@@ -152,6 +152,10 @@ export const Register = ({ navigation, isLoggedIn }) => {
           maxWidth: "30%",
         }}
       >
+        <img
+          src={require("../utils/logo/logo.png")}
+          style={{ padding: "0 15%", width: "70%", marginBottom: "20px" }}
+        />
         <h2>{`${t("register_welcome")}`}</h2>
         <FormControl>
           <FormLabel style={{ color: "black" }}>{`${t(

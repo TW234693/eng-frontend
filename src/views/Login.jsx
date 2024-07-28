@@ -89,55 +89,66 @@ export const Login = ({ onLogIn, isLoggedIn }) => {
         e.key === "Enter" && handleLogin(e);
       }}
     >
-      <h2>{t("login_welcome")}</h2>
-      <FormControl style={{ marginBottom: "10px" }}>
-        <FormControl>
-          <TextField
-            label={`${t("email")}`}
-            type="email"
-            placeholder={`${t("email")}`}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            sx={{ m: "10px" }}
-          />
-          {emailError && showErrors ? (
-            <Alert severity="error" variant="filled">
-              {emailError}
-            </Alert>
-          ) : null}
-        </FormControl>
-        <FormControl>
-          <TextField
-            label={`${t("password")}`}
-            type="password"
-            placeholder="************"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            sx={{ m: "10px" }}
-          />
-          {passwordError && showErrors ? (
-            <Alert severity="error" variant="filled">
-              {passwordError}
-            </Alert>
-          ) : null}
-        </FormControl>
-      </FormControl>
-      <Button
-        sx={{ m: "10px" }}
-        variant="contained"
-        onClick={(e) => handleLogin(e)}
+      <FormControl
+        style={{
+          minWidth: "30%",
+          maxWidth: "30%",
+        }}
       >
-        {`${t("login")}`}
-      </Button>
-      {loginError && showErrors ? (
-        <Alert severity="error" variant="filled">
-          {loginError}
-        </Alert>
-      ) : null}
-      <p>
-        {`${t("login_noAccount")} `}
-        <a href="../register">{`${t("login_registerHere")}`}</a>
-      </p>
+        <img
+          src={require("../utils/logo/logo.png")}
+          style={{ padding: "0 15%", width: "70%", marginBottom: "20px" }}
+        />
+        <h2>{t("login_welcome")}</h2>
+        <FormControl style={{ marginBottom: "10px" }}>
+          <FormControl>
+            <TextField
+              label={`${t("email")}`}
+              type="email"
+              placeholder={`${t("email")}`}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              sx={{ m: "10px" }}
+            />
+            {emailError && showErrors ? (
+              <Alert severity="error" variant="filled">
+                {emailError}
+              </Alert>
+            ) : null}
+          </FormControl>
+          <FormControl>
+            <TextField
+              label={`${t("password")}`}
+              type="password"
+              placeholder="************"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              sx={{ m: "10px" }}
+            />
+            {passwordError && showErrors ? (
+              <Alert severity="error" variant="filled">
+                {passwordError}
+              </Alert>
+            ) : null}
+          </FormControl>
+        </FormControl>
+        <Button
+          sx={{ m: "10px" }}
+          variant="contained"
+          onClick={(e) => handleLogin(e)}
+        >
+          {`${t("login")}`}
+        </Button>
+        {loginError && showErrors ? (
+          <Alert severity="error" variant="filled">
+            {loginError}
+          </Alert>
+        ) : null}
+        <p>
+          {`${t("login_noAccount")} `}
+          <a href="../register">{`${t("login_registerHere")}`}</a>
+        </p>
+      </FormControl>
     </div>
   );
 };

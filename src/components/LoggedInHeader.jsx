@@ -177,6 +177,15 @@ export const LoggedInHeader = ({ onLogOut, profile, navigation, isClient }) => {
           </span>
         </div>
       </div>
+      <Button onClick={() => navigation("/home", { replace: true })}>
+        <img
+          src={require("../utils/logo/logoSymbol.png")}
+          style={{
+            width: "50px",
+            filter: "brightness(0) invert(1)",
+          }}
+        />
+      </Button>
       <div>
         <Button
           onClick={(e) => handleLangMenuButtonClick(e)}
