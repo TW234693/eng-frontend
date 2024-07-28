@@ -86,8 +86,8 @@ export const en = {
   profile_ratings: "Ratings",
 
   community_searchForDietitian: "Search for a dietitian",
-  community_previousResults: "Next results",
-  community_nextResults: "Previous results",
+  community_previousResults: "Previous results",
+  community_nextResults: "Next results",
   community_noResults: "No matching results found.",
 
   clients_fetchingData: "Fetching client data...",
